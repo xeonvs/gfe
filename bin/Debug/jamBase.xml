@@ -1,0 +1,55 @@
+﻿<?xml version="1.0"?>
+<doc>
+<assembly>
+<name>
+jamBase
+</name>
+</assembly>
+<members>
+<member name="P:jamBase.My.Resources.Resources.ResourceManager">
+	<summary>
+  Returns the cached ResourceManager instance used by this class.
+</summary>
+</member><member name="P:jamBase.My.Resources.Resources.Culture">
+	<summary>
+  Overrides the current thread's CurrentUICulture property for all
+  resource lookups using this strongly typed resource class.
+</summary>
+</member><member name="T:jamBase.My.Resources.Resources">
+	<summary>
+  A strongly-typed resource class, for looking up localized strings, etc.
+</summary>
+</member><member name="M:jamBase.Database.GetHeadesByNum(System.Int32@)">
+	<summary>
+  Возвращает раскодированные заголовки письма
+ </summary>
+	<param name="NumberMessage">Номер нужного письма</param>
+</member><member name="M:jamBase.Database.GetHeadesByNumAll(System.Int32@)">
+	<summary>
+  Возвращает полные раскодированные заголовки письма
+ </summary>
+	<param name="NumberMessage"></param>
+	<remarks>в джам базе не исспользуется</remarks>
+</member><member name="M:jamBase.Database.#ctor">
+	<summary>
+ конструктор "по умолчанию"
+ </summary>
+</member><member name="M:jamBase.Database.#ctor(System.String)">
+	<summary>
+ Создает экземпляр класса и сразу загружает базу
+ </summary>
+</member><member name="M:jamBase.Database.GetMessageOffsetFromIndex(System.Int32)">
+	<summary>
+  Получает из индексного файла смещение интересующего нас письма
+ </summary>
+</member><member name="M:jamBase.Database.GetReplayNextForAnswer(System.Int32@,System.Int32@)">
+	<summary>
+ 'Возвращает первое письмо в интересующей нас цепочке ответов где поле RaplayNext=0
+ </summary>
+</member><member name="M:jamBase.Database.DeCode(System.String)">
+	<summary>
+ функция декодирует ESC последовательность
+ </summary>
+</member>
+</members>
+</doc>

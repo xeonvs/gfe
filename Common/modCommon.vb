@@ -1,0 +1,149 @@
+Option Explicit On
+
+Imports System.Reflection
+Imports System.IO
+Imports System.Text
+Imports System.Data
+
+''' <summary>
+''' Перечень Режимов Работы с письмом
+''' </summary>
+Public Enum ReplayMode As Integer
+    NewMail = 0          'Новое письмо
+    ReplayFrom = 1       'Ответ отправителю
+    ReplayTo = 2         'Ответ отправителю исходного
+    ReplayFromNotCit = 3 'Ответ без цитирования
+    ReplayOtherArea = 4  'Ответ в другую эху
+    MailForward = 5      'Пересылка письма
+    MailMoving = 6       'Перемещение
+    MailCopying = 7      'Копирование
+    MailChange = 8       'Изменение
+    BookMail = 9         'Письмо из адресной книги
+    ViewMails = 99       'Просмотр
+End Enum
+
+''' <summary>
+''' Основной общий модуль приложения
+''' </summary>
+Module modCommon
+
+    Public clsEchos As New EasyEchosSupport.clsEchoNames                    'Интерфейс доступа к спискам Эх
+    Public Bases As New Dictionary(Of IDatabases.enmBaseType, System.Type)  'Поддерживаемые базы
+    Public dsSmiles As New DataSet("mySmiles")                              'DataSet со смайликами
+
+    ''' <summary>
+    ''' Загружает Плагины для работы с базами сообщений.
+    ''' </summary>
+    ''' <remarks>загружаются только те сборки внутри которых определен класс .Database</remarks>
+    Public Sub LoadDatabaseModules()
+        Dim di As New DirectoryInfo(AppRun)
+        Dim modules() As FileInfo = di.GetFiles("*Base.dll")
+
+
+        For Each fModule As FileInfo In modules
+            Dim cModule As String = fModule.Name
+            Dim ModuleName As String = cModule.Replace(".dll", "")
+            Dim a As Assembly
+
+            Try
+                a = Assembly.LoadFrom(cModule)
+                Dim mytypes As Type() = a.GetTypes()
+                Dim flags As BindingFlags = BindingFlags.NonPublic Or BindingFlags.Public Or BindingFlags.Static Or _
+                                            BindingFlags.Instance Or BindingFlags.DeclaredOnly
+                Dim dbtype As IDatabases.enmBaseType = IDatabasesTypes.enmBaseType.Unknown
+
+                For Each t As Type In mytypes
+                    If t.FullName.IndexOf(ModuleName + ".Database") <> -1 Then
+                        Dim mi As MethodInfo() = t.GetMethods(flags)
+                        Dim obj As Object = Activator.CreateInstance(t)
+
+                        For Each m As MethodInfo In mi
+                            If m.Name.IndexOf("get_BaseType") <> -1 Then
+                                dbtype = m.Invoke(obj, Nothing)
+                            End If
+                        Next
+                        If dbtype <> IDatabasesTypes.enmBaseType.Unknown And t.IsPublic = True Then
+                            Bases.Add(dbtype, t)
+                        Else
+                            'errroooorrrr
+                        End If
+                    End If
+                Next
+            Catch ex As FileLoadException
+                MsgBox("Ошибка при загрузке модуля базы " & cModule & vbCrLf & "Проверьте его тип.", MsgBoxStyle.Exclamation, Application.ProductName)
+            End Try
+        Next
+    End Sub
+
+    ''' <summary>
+    ''' Загружает различные плагины.
+    ''' </summary>
+    ''' <remarks>загружаются только те сборки внутри которых определен класс-реализация интерфейса IModule</remarks>
+    Public Sub LoadOtherModules()
+        '
+    End Sub
+
+    ''' <summary>
+    ''' Загружает смайлики из XML документа.
+    ''' </summary>    
+    Public Sub CreateSmilesDataset()
+        With dsSmiles.Tables.Add("Smiles")
+            With .Columns.Add("Id", GetType(Integer))
+                .AutoIncrement = True
+                .AllowDBNull = False
+            End With
+            .Columns.Add("Smile", GetType(String)).AllowDBNull = False
+            .Columns.Add("Path", GetType(String)).AllowDBNull = False
+            .PrimaryKey = New DataColumn() {.Columns("Id")}
+        End With
+
+        Try
+            dsSmiles.ReadXml(SmilesPath & "\smilez.xml")
+        Catch
+            'нужно сообщение тут?
+        End Try
+
+    End Sub
+
+    ''' <summary>
+    ''' Заменяет смайлики на их картинки.
+    ''' </summary>
+    ''' <param name="rtf">Ссылка на объект типа Windows.Forms.RichTextBox</param>    
+    Public Sub ReplaceSmiles(ByRef rtf As Windows.Forms.RichTextBox)
+        Dim smile, path As String
+        Dim st, fn As Integer
+        Dim MyBitmap As Bitmap
+        'Dim MyFormat As DataFormats.Format = DataFormats.GetFormat(DataFormats.Bitmap)
+
+        For i As Integer = 0 To dsSmiles.Tables("Smiles").Rows.Count - 1
+            Dim row As DataRow = dsSmiles.Tables("Smiles").Rows(i)
+            smile = CType(row("Smile"), String)
+            path = CType(row("Path"), String)
+
+            st = InStr(rtf.Text, smile, CompareMethod.Text) 'найденный смайл
+            If st <> 0 Then
+                MyBitmap = Bitmap.FromFile(SmilesPath & path)                
+                My.Computer.Clipboard.Clear()
+                My.Computer.Clipboard.SetImage(MyBitmap)
+            End If
+
+            While st <> 0
+                fn = st + smile.Length + 1  'длинна
+                rtf.SelectionStart = st - 1
+                rtf.SelectionLength = smile.Length
+
+                If My.Computer.Clipboard.ContainsImage Then
+                    'If rtf.CanPaste(MyFormat) Then
+                    rtf.Paste()
+                    'Else
+                    'MessageBox.Show("The data format that you attempted to paste is not supported by this control.")
+                    'End If
+                End If
+
+                st = InStr(fn, rtf.Text, smile, CompareMethod.Text)
+            End While
+        Next
+
+    End Sub
+
+End Module

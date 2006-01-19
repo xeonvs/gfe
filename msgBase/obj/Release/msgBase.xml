@@ -1,0 +1,32 @@
+﻿<?xml version="1.0"?>
+<doc>
+<assembly>
+<name>
+msgBase
+</name>
+</assembly>
+<members>
+<member name="M:msgBase.Database.#ctor">
+	<summary>
+ конструктор "по умолчанию"
+ </summary>
+</member><member name="M:msgBase.Database.#ctor(System.String)">
+	<summary>
+ Создает экземпляр класса и сразу загружает базу
+ </summary>
+</member><member name="P:msgBase.My.Resources.Resources.ResourceManager">
+	<summary>
+  Returns the cached ResourceManager instance used by this class.
+</summary>
+</member><member name="P:msgBase.My.Resources.Resources.Culture">
+	<summary>
+  Overrides the current thread's CurrentUICulture property for all
+  resource lookups using this strongly typed resource class.
+</summary>
+</member><member name="T:msgBase.My.Resources.Resources">
+	<summary>
+  A strongly-typed resource class, for looking up localized strings, etc.
+</summary>
+</member>
+</members>
+</doc>

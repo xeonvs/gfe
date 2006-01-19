@@ -1,0 +1,199 @@
+﻿<?xml version="1.0"?>
+<doc>
+<assembly>
+<name>
+EasyEchosSupport
+</name>
+</assembly>
+<members>
+<member name="M:EasyEchosSupport.clsEchoNames.#ctor">
+	<summary>
+ Конструктор "по умолчанию"
+ </summary>
+</member><member name="P:EasyEchosSupport.clsEchoNames.About">
+	<summary>
+ Возвращает версию библиотеки.
+ </summary>
+</member><member name="P:EasyEchosSupport.clsEchoNames.ConfigFile">
+	<summary>
+ Получает/устанавливает рабочий файл конфигурации
+ </summary>
+</member><member name="P:EasyEchosSupport.clsEchoNames.TosserName(System.Int32)">
+	<summary>
+ Возвращает Имя тоссера по его Id
+ </summary>
+	<param name="id">Номер тоссера</param>
+</member><member name="P:EasyEchosSupport.clsEchoNames.TosserCount">
+	<summary>
+ Возвращает кол-во поддерживаемых тоссеров
+ </summary>
+</member><member name="P:EasyEchosSupport.clsEchoNames.TosserHeuristicAnalyzer(System.String)">
+	<summary>
+ Возвращает Id вероятного тоссера для данного конфига пользуясь эвристиками
+ </summary>
+	<param name="FileToAnalyze">Файл конфигурации с полным путем</param>
+</member><member name="P:EasyEchosSupport.clsEchoNames.CurrentTosserType">
+	<summary>
+ Возвращает Id текущего парсера конфига
+ </summary>
+</member><member name="P:EasyEchosSupport.clsEchoNames.EchosCount">
+	<summary>
+ Возвращает кол-во эх
+ </summary>
+	<remarks>Зачем тут строка не помню :(</remarks>
+</member><member name="P:EasyEchosSupport.clsEchoNames.GetEchoFileByName(System.String)">
+	<summary>
+ Возвращеает полный путь и файл содержащий эхоконференцию по ее имени
+ </summary>
+	<param name="EchoName">Имя эхи</param>
+</member><member name="P:EasyEchosSupport.clsEchoNames.GetEchoFileByNum(System.Int32)">
+	<summary>
+ Возвращеает полный путь и файл к эхоконференции по ее номеру
+ </summary>
+	<param name="Number">Порядковый номер эхи</param>
+	<remarks>В данном случае это внутренний номер, а не номер в конфиге</remarks>
+</member><member name="P:EasyEchosSupport.clsEchoNames.GetEchoNameByNum(System.Int32)">
+	<summary>
+ Возвращеает полный путь и файл к эхоконференции по ее номеру
+ </summary>
+	<param name="Number">внутренний номер эхи</param>
+	<remarks>смю GetEchoFileByNum</remarks>
+</member><member name="P:EasyEchosSupport.clsEchoNames.GetEchoDescriptionByNum(System.Int32)">
+	<summary>
+ Возвращеает описание по номеру эхи
+ </summary>
+	<param name="Number">внутренний номер эхи</param>
+	<remarks>смю GetEchoFileByNum</remarks>
+</member><member name="P:EasyEchosSupport.clsEchoNames.GetEchoGroupByNum(System.Int32)">
+	<summary>
+ Возвращает группу эхи по ее номеру
+ </summary>
+	<value>Порядковый номер группы</value>
+	<remarks>Номера внутренние</remarks>
+</member><member name="P:EasyEchosSupport.clsEchoNames.GetEchoAkAByNum(System.Int32)">
+	<summary>
+ Возвращеает aka по номеру эхи
+ </summary>
+	<param name="Number">внутренний номер эхи</param>
+	<remarks>смю GetEchoFileByNum</remarks>
+</member><member name="P:EasyEchosSupport.clsEchoNames.GetEchoTypeByNum(System.Int32)">
+	<summary>
+ Возвращеает Тип эхи по номеру    
+ </summary>
+	<param name="Number">внутренний номер эхи</param>
+	<value>Тип базы данных определенный в IDatabasesTypes</value>
+	<remarks>смю GetEchoFileByNum</remarks>
+</member><member name="P:EasyEchosSupport.clsEchoNames.GetEchoNumByName(System.String)">
+	<summary>
+ Возвращает номер эхи по ее имени
+ </summary>
+	<param name="EchoName">Регистрозависимое имя эхи</param>
+	<value>порядоковый номер</value>
+	<remarks>смю GetEchoFileByNum</remarks>
+</member><member name="P:EasyEchosSupport.clsEchoNames.GetEchoUplinkByNum(System.Int32)">
+	<summary>
+ Возвращает аплинка для эхи по номеру
+ </summary>
+	<param name="Number">внутренний номер эхи</param>
+	<value>Адрес Аплинка</value>
+	<remarks>смю GetEchoFileByNum</remarks>
+</member><member name="P:EasyEchosSupport.clsEchoNames.GetEchoDownlinksByNum(System.Int32)">
+	<summary>
+ Возвращает всех подписчиков данной эхи
+ </summary>
+	<param name="Number">Порядковый номер эхи</param>
+	<value>строка с адресами подпистичок разделенными crlf</value>
+	<remarks>смю GetEchoFileByNum</remarks>
+</member><member name="M:EasyEchosSupport.clsEchoNames.ParseConfig">
+	<summary>
+ Стартовый метод, парсит конфиг и устанавливает внутренние состояние.
+ </summary>
+</member><member name="M:EasyEchosSupport.clsEchoNames.AddEchoToList(EasyEchosSupport.clsEchoNames.EchoRefType@)">
+	<summary>
+ добавляет в коллекцию
+ </summary>
+	<param name="ec"></param>
+</member><member name="M:EasyEchosSupport.clsEchoNames.ReadAreasBBS">
+	<summary>
+ Читает списох эх из стандартного файла Areas.bbs
+ </summary>
+</member><member name="M:EasyEchosSupport.clsEchoNames.ReadFastechoCfg">
+	<summary>
+ Читает списох эх из конфига FastEcho 1.46.1
+ </summary>
+</member><member name="M:EasyEchosSupport.clsEchoNames.ReadHPTCfg">
+	<summary>
+ Читает списох эх из конфига Husky Portable Tosser 1.4
+ </summary>
+	<remarks>версия 1.4 и старше</remarks>
+</member><member name="M:EasyEchosSupport.clsEchoNames.ReadBBTossCfg">
+	<summary>
+ Читает списох эх из конфига BBToss 2.50
+ </summary>
+</member><member name="M:EasyEchosSupport.clsEchoNames.SortEchoByGroupS">
+	<summary>
+ Сортируем по группам предварительно отсортировав по именам внутри группы.
+ </summary>
+	<remarks>в данном случае как пример исспользуется сортировка Шелла</remarks>
+</member><member name="M:EasyEchosSupport.clsEchoNames.SortEchoByNameS">
+	<summary>
+ сортируем по именам
+ </summary>
+</member><member name="M:EasyEchosSupport.clsEchoNames.SortEchoByGroup">
+	<summary>
+ простая сортировка
+ </summary>
+</member><member name="M:EasyEchosSupport.clsEchoNames.SortEchoByName">
+	<summary>
+ сортируем по именам
+ </summary>
+</member><member name="M:EasyEchosSupport.clsEchoNames.IsAdressString(System.String)">
+	<summary>
+ Расширенная проверка принадлежности строки к FTN адресу
+ </summary>
+	<param name="sAdress">Тестируемая строка</param>
+	<returns>Возвращает TRUE если строка является адресом</returns>
+</member><member name="M:EasyEchosSupport.clsEchoNames.dec2bin(System.Int64@)">
+	<summary>
+ десятично-двоичное переобразование
+ </summary>
+	<param name="dec">Десятичное число</param>
+	<returns>Двоичное число в строке</returns>
+</member><member name="M:EasyEchosSupport.clsEchoNames.bin2dec(System.String@)">
+	<summary>
+ двоично-десятичное переобразование
+ </summary>
+	<param name="bin">Строка с двоичным числом</param>
+	<returns>Длинное целое</returns>
+</member><member name="T:EasyEchosSupport.clsEchoNames">
+	<summary>
+ Класс предоставляющий доступ к списку эх
+ </summary>
+</member><member name="M:EasyEchosSupport.clsINI.RemoveSection(System.String)">
+	<summary>
+ Удаляет секцию из INI файла
+ </summary>
+</member><member name="P:EasyEchosSupport.clsINI.SectionExists(System.String)">
+	<summary>
+ Проверяет наличие секции в INI файле
+ </summary>
+</member><member name="T:EasyEchosSupport.clsINI">
+	<summary>
+ Класс предоставляет доступ к INI файлам
+ </summary>
+</member><member name="P:EasyEchosSupport.My.Resources.Resources.ResourceManager">
+	<summary>
+  Returns the cached ResourceManager instance used by this class.
+</summary>
+</member><member name="P:EasyEchosSupport.My.Resources.Resources.Culture">
+	<summary>
+  Overrides the current thread's CurrentUICulture property for all
+  resource lookups using this strongly typed resource class.
+</summary>
+</member><member name="T:EasyEchosSupport.My.Resources.Resources">
+	<summary>
+  A strongly-typed resource class, for looking up localized strings, etc.
+</summary>
+</member>
+</members>
+</doc>

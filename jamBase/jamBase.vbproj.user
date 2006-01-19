@@ -1,0 +1,6 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <LastOpenVersion>8.0.50215</LastOpenVersion>
+    <ReferencePath>C:\Projects\.NET\Gfe.Net\GfeCoreDb\bin\Debug\;C:\Projects\.NET\Gfe.Net\bin\Debug\</ReferencePath>
+  </PropertyGroup>
+</Project>

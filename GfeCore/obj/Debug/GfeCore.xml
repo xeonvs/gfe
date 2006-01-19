@@ -1,0 +1,193 @@
+﻿<?xml version="1.0"?>
+<doc>
+<assembly>
+<name>
+GfeCore
+</name>
+</assembly>
+<members>
+<member name="P:GfeCore.IDatabases.BaseType">
+	<summary>
+ Тип базы
+ </summary>
+</member><member name="P:GfeCore.IDatabases.From">
+	<summary>
+ Отправитель письма
+ </summary>
+</member><member name="P:GfeCore.IDatabases.FromAddr">
+	<summary>
+ Адрес отправителя
+ </summary>
+</member><member name="P:GfeCore.IDatabases.To">
+	<summary>
+ Получатель письма
+ </summary>
+</member><member name="P:GfeCore.IDatabases.ToAddr">
+	<summary>
+ Адрес получателя письма
+ </summary>
+</member><member name="P:GfeCore.IDatabases.DateWritten">
+	<summary>
+ Дата написания письма
+ </summary>
+	<value>значение в UnixTime</value>
+</member><member name="P:GfeCore.IDatabases.DateArrived">
+	<summary>
+ Дата доставки письма.
+ </summary>
+	<value>значение в UnixTime</value>
+</member><member name="P:GfeCore.IDatabases.Subject">
+	<summary>
+ Тема Письма
+ </summary>
+</member><member name="P:GfeCore.IDatabases.MessageText">
+	<summary>
+ Текст письма
+ </summary>
+</member><member name="P:GfeCore.IDatabases.MessageFlags">
+	<summary>
+ Флаги письма
+ </summary>
+</member><member name="P:GfeCore.IDatabases.ReplayTo">
+	<summary>
+ Возвращает номер сообщения на которое данное является ответом
+ </summary>
+</member><member name="P:GfeCore.IDatabases.ReplayFirst">
+	<summary>
+ Возвращает номер первого сообщения в цепочкие ответов
+ </summary>
+</member><member name="P:GfeCore.IDatabases.ReplayNext">
+	<summary>
+ Возвращает номер мессага в следующей цепочке ответов
+ </summary>
+</member><member name="P:GfeCore.IDatabases.ReplayNextS">
+	<summary>
+ Возвращает полную цепочку ответов
+ </summary>
+	<remarks>Действительно только для SQUISH базы</remarks>
+</member><member name="P:GfeCore.IDatabases.DBName">
+	<summary>
+ Полный путь и файл базы сообщений
+ </summary>
+	<value></value>
+	<remarks></remarks>
+</member><member name="P:GfeCore.IDatabases.EchoName">
+	<summary>
+ Имя открытой эхи 
+ </summary>
+</member><member name="P:GfeCore.IDatabases.MessageCount">
+	<summary>
+ Число сообщений в эхе
+ </summary>
+</member><member name="P:GfeCore.IDatabases.MessageCountByEcho(System.String)">
+	<summary>
+ Возвращает число сообщений по имени эхи
+ </summary>
+	<param name="EchoPath">Полный путь</param>
+</member><member name="M:GfeCore.IDatabases.GetMessageByNum(System.Int32@)">
+	<summary>
+ Загружает текст сообщения по номеру
+ </summary>
+</member><member name="M:GfeCore.IDatabases.GetMessageDumpByNum(System.Int32@)">
+	<summary>
+ Возвращает Дамп сообщения по номеру
+ </summary>
+</member><member name="M:GfeCore.IDatabases.GetHeadesByNum(System.Int32@)">
+	<summary>
+ Загружает Заголовки письма по номеру
+ </summary>
+</member><member name="M:GfeCore.IDatabases.GetHeadesByNumForTree(System.Int32@)">
+	<summary>
+ Загружает Заголовки письма по номеру
+ </summary>
+	<remarks>Исспользуется при построении дерева</remarks>
+</member><member name="M:GfeCore.IDatabases.GetHeadesByNumAll(System.Int32@)">
+	<summary>
+ Загружает все возможные заголовки письма
+ </summary>
+	<remarks>Очень медленный метод</remarks>
+</member><member name="M:GfeCore.IDatabases.GetLastReadMsgNum(System.Int32@)">
+	<summary>
+ Возвращает номер последнего прочитанного мессага
+ </summary>
+	<param name="msgNumber">Если не 0 то записывает информацию</param>
+</member><member name="M:GfeCore.IDatabases.GetMessageKlugeByNum(System.Int32@)">
+	<summary>
+ Возвращает письмо с кладжами.
+ </summary>
+	<param name="NumberMessage"></param>
+</member><member name="M:GfeCore.IDatabases.OpenDB">
+	<summary>
+ Открывает базу сообщений
+ </summary>
+</member><member name="M:GfeCore.IDatabases.WriteMessage">
+	<summary>
+ Сохраняет сообщение в базу
+ </summary>
+</member><member name="M:GfeCore.IDatabases.DeleteMessageByNum(System.Int32@)">
+	<summary>
+ Удаляет сообщение из базы
+ </summary>
+</member><member name="M:GfeCore.IDatabases.MessageStatus(System.Int32@,System.Int32@)">
+	<summary>
+ Устанавливает статус сообщения в нутры базы
+ </summary>
+	<param name="Status">при значении -1 возвращает статус текущего мессага</param>
+	<remarks>Работает не со всеми тоссерами</remarks>
+</member><member name="T:GfeCore.IDatabases">
+	<summary>
+ Интерфейc определяет доступ к различным базам писем
+ </summary>
+</member><member name="M:GfeCore.IModuleInfo.GetModuleIcon">
+	<summary>
+ Ворвращает иконку ассоциированную с модулем
+ </summary>
+</member><member name="P:GfeCore.IModuleInfo.Description">
+	<summary>
+ Возвращает описание модуля
+ </summary>
+</member><member name="P:GfeCore.IModuleInfo.Name">
+	<summary>
+ Возвращает Имя модуля
+ </summary>
+</member><member name="T:GfeCore.IModuleInfo">
+	<summary>
+ Интерфейс Информации о Модуле
+ </summary>
+</member><member name="T:GfeCore.IModule">
+	<summary>
+ Интерфейс Динамического Модуля
+ </summary>
+	<remarks></remarks>
+</member><member name="T:GfeCore.IDatabasesTypes.enmBaseType">
+	<summary>
+ Перечисление доступных типов баз
+ </summary>
+</member><member name="T:GfeCore.IDatabasesTypes.MSG_ATTRIBUTE">
+	<summary>
+ Атрибуты Netmail сообщения
+ </summary>
+</member><member name="T:GfeCore.IDatabasesTypes.JAM_ATTRIBUTE">
+	<summary>
+ Атрибуты сообщения в JAM базе
+ </summary>
+</member><member name="T:GfeCore.IDatabasesTypes">
+	<summary>
+ Интерфейс определяет базовые типы данных для поддержки эх
+ </summary>
+</member><member name="P:GfeCore.My.Resources.Resources.ResourceManager">
+	<summary>
+  Returns the cached ResourceManager instance used by this class.
+</summary>
+</member><member name="P:GfeCore.My.Resources.Resources.Culture">
+	<summary>
+  Overrides the current thread's CurrentUICulture property for all
+  resource lookups using this strongly typed resource class.
+</summary>
+</member><member name="T:GfeCore.My.Resources.Resources">
+	<summary>
+  A strongly-typed resource class, for looking up localized strings, etc.
+</summary>
+</member>
+</members>
+</doc>
