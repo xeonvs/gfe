@@ -31,7 +31,7 @@ Public Class frmMain
         Me.Left = CInt(GetGFEOption("Screen\Main", "X", "0")) / 15
         Me.Top = CInt(GetGFEOption("Screen\Main", "Y", "0")) / 15
 
-        If Me.WindowState <> System.Windows.Forms.FormWindowState.Maximized Then
+        If Me.WindowState <> FormWindowState.Maximized Then
             Me.Width = CInt(GetGFEOption("Screen\Main", "Width", CStr(Me.Width * 15))) / 15
             Me.Height = CInt(GetGFEOption("Screen\Main", "Height", CStr(Me.Height * 15))) / 15
             Select Case CInt(GetGFEOption("Screen\Main", "WindowState", Me.WindowState))
@@ -418,8 +418,8 @@ Public Class frmMain
         MessageBox.Show("Не реализовано!", Me.Text, MessageBoxButtons.OK, MessageBoxIcon.Information)
     End Sub
 
-    Private Sub DisplayMessage(ByVal MessageNumber As Integer)
-        MailViewer.Clear()
+    Private Sub DisplayMessage_rtf(ByVal MessageNumber As Integer)
+        'MailViewer.Clear()
 
         curEcho.GetHeadesByNum(MessageNumber)
         curEcho.GetMessageByNum(MessageNumber)
@@ -435,10 +435,44 @@ Public Class frmMain
         End If
 
         If curEcho.MessageText.Length <> 0 Then
-            MailViewer.ReadOnly = False
-            MailViewer.Text = curEcho.MessageText
-            modCommon.ReplaceSmiles(Me.MailViewer)
-            MailViewer.ReadOnly = True
+            'MailViewer.ReadOnly = False
+            'MailViewer.Text = curEcho.MessageText
+            'modCommon.ReplaceSmiles(Me.MailViewer)
+            'MailViewer.ReadOnly = True
+        End If
+
+    End Sub
+
+    Private Sub DisplayMessage(ByVal MessageNumber As Integer)
+        curEcho.GetHeadesByNum(MessageNumber)
+        curEcho.GetMessageByNum(MessageNumber)
+
+        lblFrom.Text = "От кого: " & curEcho.From
+        lblFromAddr.Text = curEcho.FromAddr '& " (" & addr2city(msg.FromAddr) & ")"
+        lblTo.Text = "Кому: " & curEcho.To
+
+        If curEcho.Subject.Length > 0 Then
+            MailHead.Text = curEcho.Subject & " [ " & MessageNumber & " из " & curEcho.MessageCount & " ] " & CStr(DateAdd("s", curEcho.DateWritten, #1/1/1970#))
+        Else
+            MailHead.Text = "Письмо без названия [ " & MessageNumber & " из " & curEcho.MessageCount & " ] " & CStr(DateAdd("s", curEcho.DateWritten, #1/1/1970#))
+        End If
+
+        If curEcho.MessageText.Length <> 0 Then
+            'Note: В свойствах URL WebBrowser прописано about:blank
+            Dim myHtml As HtmlDocument = HtmlMailViewer.Document
+            Dim htm As String
+
+            myHtml.Body.Style = "border-style: none; " & _
+                                "margin: 2px; " & _
+                                "background-color: " & Win32ColorToHtml(msgBackColor) & "; " & _
+                                "color: " & Win32ColorToHtml(msgMainTextColor)
+            
+            htm = "<font size=""2"" color=""" & Win32ColorToHtml(msgMainTextColor) & """>" & curEcho.MessageText & "</font>"
+            htm = htm.Replace(vbCr, "<br>" & vbCrLf)
+
+            'заполняем текстом
+            modCommon.ReplaceSmiles(htm)
+            myHtml.Body.InnerHtml = htm
         End If
 
     End Sub

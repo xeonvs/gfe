@@ -3,6 +3,7 @@ Option Explicit On
 Imports System.Reflection
 Imports System.IO
 Imports System.Text
+Imports System.Text.RegularExpressions
 Imports System.Data
 
 ''' <summary>
@@ -145,5 +146,51 @@ Module modCommon
         Next
 
     End Sub
+
+    ''' <summary>
+    ''' Заменяет смайлики на их картинки в html коде.
+    ''' </summary>
+    ''' <param name="html">Cтрока с html кодом</param>    
+    Public Sub ReplaceSmiles(ByRef html As String)
+        Dim smile, path As String
+        Dim Match As Match, MatchResults As MatchCollection
+        Dim smc, cc As Integer, tmp As String
+
+        For i As Integer = 0 To dsSmiles.Tables("Smiles").Rows.Count - 1
+            Dim row As DataRow = dsSmiles.Tables("Smiles").Rows(i)
+            smile = CType(row("Smile"), String) 'начинаются с пробела
+            path = "<img src=""file://" & SmilesPath & CType(row("Path"), String) & """>"
+
+            MatchResults = Regex.Matches(html, "[^le|\d+?|pp](" & Regex.Escape(smile) & "+)", RegexOptions.Multiline Or RegexOptions.Compiled)
+            For j As Integer = 0 To MatchResults.Count - 1
+                Match = MatchResults.Item(j)
+                cc = Match.Groups.Item(1).Value.Length - 1
+
+                While Match.Groups.Item(1).Value.Substring(cc, 1) = smile.Substring(smile.Length - 1, 1)
+                    cc -= 1
+                End While
+
+                tmp = ""
+                cc = Match.Groups.Item(1).Value.Length - 1 - cc
+                While cc > 0
+                    tmp &= path
+                    cc -= 1
+                End While
+
+                html = Replace(html, Match.Groups.Item(1).Value, tmp, , 1)
+
+            Next
+
+        Next
+    End Sub
+
+    ''' <summary>
+    '''  Возвращает цвет в формате пригодном для html
+    ''' </summary>
+    ''' <param name="intColor">Windows 32bit Color</param>
+    ''' <returns>Возвращает строку обозначающую HTML цвет</returns>    
+    Public Function Win32ColorToHtml(ByVal intColor As Integer) As String
+        Return ColorTranslator.ToHtml(ColorTranslator.FromWin32(intColor))
+    End Function
 
 End Module
