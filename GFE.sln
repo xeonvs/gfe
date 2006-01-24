@@ -17,6 +17,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BaseModules", "BaseModules", "{03C7B906-2701-4CDD-B0EA-B1261B8EFB69}"
 EndProject
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "GfeCore", "GfeCore\GfeCore.vbproj", "{B1990938-D0EB-4664-9DB4-906733E22F15}"
+	ProjectSection(ProjectDependencies) = postProject
+		{736D9D1D-FE11-4DC1-B402-984EDB2B5C25} = {736D9D1D-FE11-4DC1-B402-984EDB2B5C25}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SvnRevision", "SvnRevision\SvnRevision.csproj", "{736D9D1D-FE11-4DC1-B402-984EDB2B5C25}"
 EndProject
