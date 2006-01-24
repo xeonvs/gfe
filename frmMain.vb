@@ -315,8 +315,9 @@ Public Class frmMain
         modCommon.LoadDatabaseModules()
         modCommon.CreateSmilesDataset()
 
+#If Not Debug Then
         frmStart.Show() 'заставочка
-
+#End If
         Me.Show()
 
         EchoList.BeginUpdate()

@@ -390,8 +390,6 @@ Public Class clsEchoNames
     ''' Стартовый метод, парсит конфиг и устанавливает внутренние состояние.
     ''' </summary>    
     Public Sub ParseConfig()
-        On Error GoTo errHandler
-
         'добавим сюда в последствии эвристики.
         Select Case CShort(GetString(HKEY_CURRENT_USER, "SOFTWARE\GFE\Options", "TosserId", "0"))
 
@@ -416,15 +414,6 @@ Public Class clsEchoNames
         End Select
 
         SortEchoByGroup() 'слегка увеличит время загрузки при большом числе эх.
-
-        Exit Sub
-errHandler:
-
-        Select Case Err.Number
-
-            Case Else
-                ErrorMessage(Err.Number, Err.Description, "EchoNamesRead::ParseConfig")
-        End Select
 
     End Sub
 
@@ -634,7 +623,6 @@ errHandler:
     ''' </summary>
     ''' <remarks>версия 1.4 и старше</remarks>
     Private Sub ReadHPTCfg()
-        On Error GoTo errHandler
         Dim Buff, tmp As String
         Dim strs() As String
         Dim cols() As String
@@ -647,12 +635,12 @@ errHandler:
         FileGet(ff, Buff)
         FileClose(ff)
 
-        strs = Split(Replace(Buff, vbLf, ""), vbCr)
+        strs = Split(Replace(Buff, vbCr, ""), vbLf)
         Buff = ""
 
         For i = 0 To UBound(strs)
 
-            strs(i) = Replace(Replace(Replace(strs(i), vbTab, " "), vbCr, ""), Chr(0), "")
+            strs(i) = Replace(Replace(Replace(Replace(strs(i), vbTab, " "), vbLf, " "), vbCr, ""), Chr(0), "")
 
             'если строка не комент, не пустая и если база не пассивная тогда обрабатываем дальше
             If Mid(strs(i), 1, 1) <> "#" And Len(Trim(strs(i))) <> 0 Then
@@ -669,7 +657,7 @@ errHandler:
 
                     Next j
 
-                    ec.EName = Trim(cols(j))
+                    ec.EName = cols(j).Trim
 
                     'путь к базе
                     For k = j + 1 To UBound(cols)
@@ -680,7 +668,7 @@ errHandler:
 
                     Next k
 
-                    ec.EFile = Trim(cols(k))
+                    ec.EFile = cols(k).Trim
 
                     'тип базы
                     ns = InStr(1, strs(i), "-b ", CompareMethod.Text) + 3
@@ -708,7 +696,7 @@ errHandler:
                     ns = InStr(1, strs(i), "-g ", CompareMethod.Text) + 3
 
                     If ns > 3 Then
-                        ec.GroupNum = Asc(UCase(Trim(Mid(strs(i), ns, 1)))) - Asc("A")
+                        ec.GroupNum = Asc(Mid(strs(i), ns, 1).Trim.ToUpper) - Asc("A")
                     Else
                         ec.GroupNum = 0
                     End If
@@ -730,9 +718,9 @@ errHandler:
 
                     If ns > 3 Then
                         If (InStr(ns, strs(i), " ", CompareMethod.Text) - ns) > 0 Then
-                            ec.AkA = Trim(Mid(strs(i), ns, InStr(ns, strs(i), " ", CompareMethod.Text) - ns))
+                            ec.AkA = Mid(strs(i), ns, InStr(ns, strs(i), " ", CompareMethod.Text) - ns).Trim
                         Else
-                            ec.AkA = Trim(Mid(strs(i), ns, Len(strs(i))))
+                            ec.AkA = Mid(strs(i), ns, Len(strs(i))).Trim
                         End If
 
                     Else
@@ -773,19 +761,6 @@ errHandler:
             End If 'len
 
         Next i
-
-        Exit Sub
-errHandler:
-
-        Select Case Err.Number
-
-            Case 53
-                MsgBox("Ошибка чтения конфигурации HPT!" & vbCrLf & "Файл " & strCfgName & " не найден!", MsgBoxStyle.Exclamation, My.Application.Info.Title)
-
-            Case Else
-                ErrorMessage(Err.Number, Err.Description, "EchoNamesRead::ReadHPTCfg")
-        End Select
-
     End Sub
 
     ''' <summary>
