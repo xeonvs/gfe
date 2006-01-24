@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.50215</ProductVersion>
+    <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{84EC6733-9DEF-4B45-B6F3-418A25A04919}</ProjectGuid>
     <OutputType>WinExe</OutputType>
@@ -89,6 +89,7 @@
     <Compile Include="frmStart.vb">
       <SubType>Form</SubType>
     </Compile>
+    <None Include="My Project\AssemblyInfo.template.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
@@ -158,4 +159,7 @@
     <None Include="Images-Src\About.png" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>"$(SolutionDir)SvnRevision\bin\$(ConfigurationName)\SvnRevision.exe" "$(SolutionDir) " "$(ProjectDir)My Project/AssemblyInfo.template.vb" "$(ProjectDir)My Project/AssemblyInfo.vb"</PreBuildEvent>
+  </PropertyGroup>
 </Project>
