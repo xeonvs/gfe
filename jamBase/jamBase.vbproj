@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.50215</ProductVersion>
+    <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{35F0A095-6FAC-4AA8-B278-859307D4E8B6}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="jamBase.vb" />
+    <None Include="My Project\AssemblyInfo.template.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
@@ -87,4 +88,7 @@
     <None Include="Resources\ModuleIcon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>"$(SolutionDir)SvnRevision\bin\$(ConfigurationName)\SvnRevision.exe" "$(SolutionDir) " "$(ProjectDir)My Project/AssemblyInfo.template.vb" "$(ProjectDir)My Project/AssemblyInfo.vb"</PreBuildEvent>
+  </PropertyGroup>
 </Project>

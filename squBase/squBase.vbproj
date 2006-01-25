@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.50215</ProductVersion>
+    <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{E27EA9F6-57F4-449D-B961-3472B4B218C8}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -42,6 +42,7 @@
     <Import Include="System.Diagnostics" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="My Project\AssemblyInfo.template.vb" />
     <Compile Include="squBase.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
@@ -86,4 +87,7 @@
     <None Include="Resources\ModuleIcon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>"$(SolutionDir)SvnRevision\bin\$(ConfigurationName)\SvnRevision.exe" "$(SolutionDir) " "$(ProjectDir)My Project/AssemblyInfo.template.vb" "$(ProjectDir)My Project/AssemblyInfo.vb"</PreBuildEvent>
+  </PropertyGroup>
 </Project>
