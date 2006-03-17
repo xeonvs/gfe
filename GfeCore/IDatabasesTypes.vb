@@ -12,6 +12,7 @@ Public Interface IDatabasesTypes
         Squish = 2      'Squish base
         Jam = 3         'JAM base
         Passthru = 7    'Pasthru base
+        FIPS = 9        'FIPS BASE
         Unknown = -1    'Unknown base
     End Enum
 

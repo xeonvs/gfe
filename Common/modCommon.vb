@@ -154,7 +154,7 @@ Module modCommon
     Public Sub ReplaceSmiles(ByRef html As String)
         Dim smile, path As String
         Dim Match As Match, MatchResults As MatchCollection
-        Dim smc, cc As Integer, tmp As String
+        Dim cc As Integer, tmp As String
 
         For i As Integer = 0 To dsSmiles.Tables("Smiles").Rows.Count - 1
             Dim row As DataRow = dsSmiles.Tables("Smiles").Rows(i)
