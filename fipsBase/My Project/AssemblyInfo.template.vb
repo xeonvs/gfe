@@ -8,11 +8,11 @@ Imports System.Runtime.InteropServices
 
 ' Review the values of the assembly attributes
 
-<Assembly: AssemblyTitle("jamBase")> 
+<Assembly: AssemblyTitle("fipsBase")> 
 <Assembly: AssemblyDescription("")> 
 <Assembly: AssemblyCompany("Visual Studio BBS")> 
-<Assembly: AssemblyProduct("jamBase")> 
-<Assembly: AssemblyCopyright("Copyright © Visual Studio BBS 2005")> 
+<Assembly: AssemblyProduct("fipsBase")> 
+<Assembly: AssemblyCopyright("Copyright © Visual Studio BBS 2006")> 
 <Assembly: AssemblyTrademark("")> 
 
 <Assembly: CLSCompliant(True)> 
@@ -20,7 +20,7 @@ Imports System.Runtime.InteropServices
 <Assembly: ComVisible(False)>
 
 'The following GUID is for the ID of the typelib if this project is exposed to COM
-<Assembly: Guid("9d65758c-337a-405b-80ba-89f3ff9c5c64")> 
+<Assembly: Guid("9FD27FF2-F097-4fbe-AD65-E9BFC0592CBA")> 
 
 ' Version information for an assembly consists of the following four values:
 '
@@ -33,5 +33,5 @@ Imports System.Runtime.InteropServices
 ' by using the '*' as shown below:
 ' <Assembly: AssemblyVersion("1.0.*")> 
 
-<Assembly: AssemblyVersion("2.0.2005.22")> 
-<Assembly: AssemblyFileVersion("2.0.2005.22")> 
+<Assembly: AssemblyVersion("2.0.2006.$WCREV$")> 
+<Assembly: AssemblyFileVersion("2.0.2006.$WCREV$")> 

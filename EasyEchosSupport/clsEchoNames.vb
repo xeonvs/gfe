@@ -4,11 +4,12 @@ Option Explicit On
 ''' <summary>
 ''' Класс предоставляющий доступ к списку эх
 ''' </summary>
+''' <remarks>В принципе это конвертированный в лоб код. Необходимо переписать все подчистую и более правельно</remarks>
 Public Class clsEchoNames
     Implements IDatabasesTypes
 
     'прекодировка dos to windows
-    Private Declare Function OemToChar Lib "user32" Alias "OemToCharA" ( _
+    Private Declare Auto Function OemToChar Lib "user32" ( _
                     ByVal lpszSrc As String, ByVal lpszDst As String _
     ) As Integer
 
@@ -60,6 +61,38 @@ Public Class clsEchoNames
         <VBFixedString(56), System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst:=56)> Public Path() As Char
         <VBFixedString(52), System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.ByValArray, SizeConst:=52)> Public Desc() As Char
     End Structure
+
+    'fips
+    Private Structure AreaRecord
+        Dim Index As Int32 'Порядковый номер области в списке (уникален)
+        Dim StructLen As Int32 'Длина записи (всегда равна 562)
+        Dim Status As Int32 'Статус области
+        <VBFixedString(129)> Dim Description As String  'Описание области
+        <VBFixedString(101)> Dim Echotag As String   'Название области
+        <VBFixedString(128)> Dim FileName As String 'Имя файла заголовков и писем без расширения
+        Dim Lastread As Int32 'Индекс последнего прочитанного письма
+        Dim Hheader As Int32 'Указатель на файл заголовков (используется во время работы программы)
+        Dim Hmessage As Int32 'Указатель на файл базы писем (используется во время работы программы)
+        <VBFixedString(21)> Dim AKA As String 'Ваш АКА для этой области
+        <VBFixedString(31)> Dim UpLink As String 'Ваш аплинк для этой области
+        <VBFixedString(12)> Dim Group As String 'Группа, к которой относится эта область
+        Dim Membership As Int32 '
+        Dim PurgeAgeCreate As Int32 'Данные, используемые пуржером при работе
+        Dim PurgeAgeRecipt As Int32
+        Dim PurgeMaxNum As Int32
+        Dim PurgeFlagCreate As Int32
+        Dim PurgeFlagAgeRecipt As Int32
+        Dim PurgeFlagNrmails As Int32
+        Dim NumberOfMails As Int32 'Число сообщений в базе писем этой области
+        Dim NumberOfAlreadyRead As Int32 'Число уже прочитанных сообщений
+        Dim LocalMail As Int32 'Флаг неэкспортируемой области
+        Dim AdditionalDays As Int32 'Дополнительное число дней для непрочитанных писем, используемое пуржером для автоматической чистки базы
+        Dim AreaCreationDate As Int32  'Дата создания области
+        'OriginIndex As Byte 'Индекс ориджина
+        <VBFixedString(68)> Shared NoName() As Char  'Внутренние неспользуемые данные
+        'Длина одной записи = 562        
+    End Structure
+
     '~~~~~~~~~~~~~~~
 
     Private Structure EchoRefType
@@ -86,11 +119,12 @@ Public Class clsEchoNames
     Public Sub New()
         MyBase.New()
 
-        ReDim TossersNames(3)
+        ReDim TossersNames(4)
         TossersNames(0) = "Areas.bbs"
         TossersNames(1) = "FastEcho 1.46.1"
         TossersNames(2) = "HPT 1.4"
         TossersNames(3) = "BBToss 2.50"
+        TossersNames(4) = "FIPS"
         'end tossers
 
     End Sub
@@ -162,6 +196,9 @@ Public Class clsEchoNames
 
                 Case "ini"
                     Return 3
+
+                Case "wwd"
+                    Return 4
 
                 Case Else
 
@@ -408,6 +445,10 @@ Public Class clsEchoNames
             Case 3
                 ReadBBTossCfg()
                 lngCurTosser = 3
+
+            Case 4
+                ReadFIPSCfg()
+                lngCurTosser = 4
 
             Case Else
                 MsgBox("Ошибка в параметре реестра" & vbCrLf & "HCU\SOFTWARE\GFE\Options\TosserId" & vbCrLf & "Проверьте настройки типа эхопроцессора.", MsgBoxStyle.Exclamation + MsgBoxStyle.SystemModal, My.Application.Info.Title)
@@ -825,6 +866,48 @@ errHandler:
 
     End Sub
 
+    ''' <summary>
+    '''Читает список эх из конфигурации FIPS
+    ''' </summary>
+    ''' <remarks >Код кривой, переписать</remarks>
+    Public Sub ReadFIPSCfg()
+        Dim i As Integer, strPath As String
+        Dim AreasFile As Integer
+        Dim ec As EchoRefType, arRec As AreaRecord
+
+        strPath = Replace$(strCfgName, "areas.wwd", "", , , vbTextCompare)
+        AreasFile = FreeFile()
+
+        Try
+            FileOpen(AreasFile, strCfgName, OpenMode.Binary)
+        Catch ex As IO.IOException
+            MsgBox("Ошибка открытия " + strCfgName, MsgBoxStyle.Exclamation)
+            Exit Sub
+        End Try
+
+        For i = 0 To (LOF(AreasFile) / 562) - 1
+            Seek(AreasFile, i * 562 + 1)
+            FileGet(AreasFile, arRec)
+
+            With ec
+                .EName = CutOfNullChar(arRec.Echotag)
+                .Description = CutOfNullChar(arRec.Description)
+                .EFile = strPath + CutOfNullChar(arRec.FileName) + ".hdr"
+                .AkA = CutOfNullChar(arRec.AKA)
+                .EchoType = IDatabasesTypes.enmBaseType.FIPS
+                .GroupNum = 0
+                .Uplink = CutOfNullChar(arRec.UpLink)
+                'пока не полностью, требуется доработка.
+            End With
+
+            AddEchoToList(ec)
+
+        Next
+
+        FileClose(AreasFile)
+
+    End Sub
+
     '
     'вспомогательные функции
     '
@@ -1069,6 +1152,17 @@ errHandler:
         Return tmp
 
     End Function
+
+    Private Function CutOfNullChar(ByVal sString As String, _
+                                    Optional ByVal bNotTrimString As Boolean = True) As String
+
+        If InStr(1, sString, vbNullChar) <> 0 Then
+            sString = Left$(sString, InStr(1, sString, vbNullChar) - 1)
+        End If
+
+        CutOfNullChar = IIf(bNotTrimString, Trim$(sString), sString)
+    End Function
+
 
     Private Sub ErrorMessage(ByRef ErrNumber As Integer, ByRef Description As String, ByRef Where As String)
         MsgBox("Ошибка #" & ErrNumber & vbCrLf & _

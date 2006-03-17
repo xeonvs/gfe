@@ -155,7 +155,12 @@ Public Class frmMain
                     frmStart.RefreshEchoName = clsEchos.GetEchoNameByNum(ECNum)
 
                     'подключаем базу требуемого типа и получаем список мессаг
-                    cdb = Activator.CreateInstance(Bases.Item(clsEchos.GetEchoTypeByNum(ECNum)))
+                    Try
+                        cdb = Activator.CreateInstance(Bases.Item(clsEchos.GetEchoTypeByNum(ECNum)))
+                    Catch ex As KeyNotFoundException
+                        MsgBox("Выбранный тип (" & clsEchos.GetEchoTypeByNum(ECNum).ToString & ") базы не поддерживается или ошибка загрузки модуля базы.", MsgBoxStyle.Critical)
+                        Exit For
+                    End Try
 
                     LI.SubItems.Add(CStr(cdb.MessageCountByEcho(clsEchos.GetEchoFileByNum(ECNum))))
                     LI.SubItems.Add(clsEchos.GetEchoDescriptionByNum(ECNum))
