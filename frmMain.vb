@@ -220,7 +220,6 @@ Public Class frmMain
 
                     netmC = netmC + 1
 
-
                     'проверяем есть ли новые письма и если есть выделяем их жирным шрифтом
                     optC = CInt(GetGFEOption("LastRead\Echos", (LI.Text), LI.SubItems(1).Text))
 
@@ -417,7 +416,7 @@ Public Class frmMain
     End Sub
 
     Private Sub aboutToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles aboutToolStripMenuItem.Click
-        frmStart.Show() 'заставочка
+        frmStart.Show() 'заставочка        
     End Sub
 
     Private Sub optionsToolStripMenuItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles optionsToolStripMenuItem.Click
