@@ -92,6 +92,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
   <PropertyGroup>
-    <PreBuildEvent>"$(SolutionDir)SvnRevision\bin\$(ConfigurationName)\SvnRevision.exe" "$(SolutionDir) " "$(ProjectDir)My Project/AssemblyInfo.template.vb" "$(ProjectDir)My Project/AssemblyInfo.vb"</PreBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
   </PropertyGroup>
 </Project>

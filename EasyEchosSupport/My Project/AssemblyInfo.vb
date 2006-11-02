@@ -17,7 +17,7 @@ Imports System.Runtime.InteropServices
 
 <Assembly: CLSCompliant(True)> 
 
-<Assembly: ComVisible(True)> 
+<Assembly: ComVisible(False)> 
 
 'The following GUID is for the ID of the typelib if this project is exposed to COM
 <Assembly: Guid("90d408cb-bee1-415c-bd9c-ed697036ca52")> 

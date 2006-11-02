@@ -119,12 +119,13 @@ Public Class clsEchoNames
     Public Sub New()
         MyBase.New()
 
-        ReDim TossersNames(4)
+        ReDim TossersNames(5)
         TossersNames(0) = "Areas.bbs"
         TossersNames(1) = "FastEcho 1.46.1"
         TossersNames(2) = "HPT 1.4"
         TossersNames(3) = "BBToss 2.50"
         TossersNames(4) = "FIPS"
+        TossersNames(5) = "squish.cfg"
         'end tossers
 
     End Sub
@@ -450,6 +451,10 @@ Public Class clsEchoNames
                 ReadFIPSCfg()
                 lngCurTosser = 4
 
+            Case 5
+                ReadSQUISHCfg()
+                lngCurTosser = 5
+
             Case Else
                 MsgBox("Ошибка в параметре реестра" & vbCrLf & "HCU\SOFTWARE\GFE\Options\TosserId" & vbCrLf & "Проверьте настройки типа эхопроцессора.", MsgBoxStyle.Exclamation + MsgBoxStyle.SystemModal, My.Application.Info.Title)
         End Select
@@ -664,20 +669,13 @@ errHandler:
     ''' </summary>
     ''' <remarks>версия 1.4 и старше</remarks>
     Private Sub ReadHPTCfg()
-        Dim Buff, tmp As String
+        Dim tmp As String
         Dim strs() As String
         Dim cols() As String
-        Dim ns, j, i, k, ff As Integer
+        Dim ns, j, i, k As Integer
         Dim ec As EchoRefType
 
-        ff = FreeFile()
-        FileOpen(ff, strCfgName, OpenMode.Binary)
-        Buff = Space(LOF(ff))
-        FileGet(ff, Buff)
-        FileClose(ff)
-
-        strs = Split(Replace(Buff, vbCr, ""), vbLf)
-        Buff = ""
+        strs = Split(Replace(ConstructHPTConfig(strCfgName), vbCr, ""), vbLf)
 
         For i = 0 To UBound(strs)
 
@@ -746,10 +744,7 @@ errHandler:
                     ns = InStr(1, strs(i), "-d """, CompareMethod.Text) + 4
 
                     If ns > 4 Then
-                        ec.Description = Trim(Mid(strs(i), ns, InStr(ns, strs(i), """", CompareMethod.Text) - ns))
-                        tmp = Space(Len(ec.Description))
-                        OemToChar(ec.Description, tmp)
-                        ec.Description = tmp
+                        ec.Description = Trim(Mid(strs(i), ns, InStr(ns, strs(i), """", CompareMethod.Text) - ns))                        
                     Else
                         ec.Description = "No Description"
                     End If
@@ -910,7 +905,172 @@ errHandler:
 
     '
     'вспомогательные функции
-    '
+    ''' <summary>
+    ''' Обрабатывает конфиг HPT вместе с инклюдами.
+    ''' </summary>
+    ''' <returns>Возвращает конфиг HPT слитый в единую строку</returns>
+    Private Function ConstructHPTConfig(ByRef baseConfig As String) As String
+        Dim rootBuff, tmp As String
+        Dim ff As Integer
+        Dim strt, fn As Integer
+        Dim fname As String
+
+        ff = FreeFile()
+        FileOpen(ff, baseConfig, OpenMode.Binary)
+        rootBuff = Space(LOF(ff))
+        FileGet(ff, rootBuff)
+        FileClose(ff)
+
+        Do
+            strt = InStr(strt + 1, rootBuff, "include ", CompareMethod.Text)
+
+            If strt = 0 Then
+                Exit Do
+            End If
+
+            fn = InStr(strt, rootBuff, vbLf)
+            fname = Replace(Mid(rootBuff, strt + 8, fn - (strt + 8)), vbCrLf, "")
+
+            If InStr(1, fname, ";") = 0 And InStr(1, fname, "$") = 0 And InStr(1, fname, ")") = 0 And InStr(1, fname, ",") = 0 And InStr(1, fname, "(") = 0 Then
+
+                ff = FreeFile()
+                FileOpen(ff, fname, OpenMode.Binary)
+                tmp = Space(LOF(ff))
+                FileGet(ff, tmp)
+                FileClose(ff)
+
+                rootBuff = rootBuff & tmp
+
+            Else
+                strt = fn
+            End If
+
+        Loop Until strt = 0
+
+        Return rootBuff
+
+    End Function
+
+    ''' <summary>
+    ''' читает конфигурацию из suish.cfg
+    ''' </summary>
+    Public Sub ReadSQUISHCfg()
+        On Error GoTo errHandler
+
+        Dim strs() As String
+        Dim cols() As String
+        Dim tmp As String
+        Dim ns, j, i, k, ff As Integer
+        Dim ec As EchoRefType
+
+        ff = FreeFile()
+        FileOpen(ff, strCfgName, OpenMode.Binary)
+        tmp = Space(LOF(ff))
+        FileGet(ff, tmp)
+        FileClose(ff)
+
+        strs = Split(Replace(tmp, vbCr, ""), vbLf)
+        tmp = vbNullString
+
+        For i = 0 To UBound(strs)
+
+            strs(i) = Replace(Replace(Replace(strs(i), vbTab, " "), vbCr, ""), Chr(0), "")
+
+            'если строка не комент, не пустая и если база не пассивная тогда обрабатываем дальше
+            If Mid(strs(i), 1, 1) <> ";" And Len(Trim(strs(i))) <> 0 Then
+                If InStr(1, strs(i), "EchoArea", CompareMethod.Text) <> 0 Or InStr(1, strs(i), "LocalArea", CompareMethod.Text) <> 0 Or InStr(1, strs(i), "BadArea", CompareMethod.Text) <> 0 Or InStr(1, strs(i), "DupeArea", CompareMethod.Text) <> 0 Then
+
+                    cols = Split(strs(i), " ")
+
+                    'ищем имя эхи, т.к. сплит работает немного кривовато и делит строку по каждому пробелу
+                    For j = 1 To UBound(cols)
+
+                        If Len(cols(j)) <> 0 Then
+                            Exit For
+                        End If
+
+                    Next j
+
+                    ec.EName = Trim(cols(j))
+
+                    'путь к базе
+                    For k = j + 1 To UBound(cols)
+
+                        If Len(cols(k)) <> 0 Then
+                            Exit For
+                        End If
+
+                    Next k
+
+                    ec.EFile = Trim(cols(k)) & ".sqd"
+                    ec.EchoType = IDatabasesTypes.enmBaseType.Squish
+
+                    'ключики
+                    'описание
+                    ns = InStr(1, strs(i), "-$n", CompareMethod.Text) + 3
+
+                    If ns > 3 Then
+                        If InStr(ns, strs(i), " -", CompareMethod.Text) = 0 Then
+                            ec.Description = Replace(Trim(Mid(strs(i), ns, Len(strs(i)))), """", "")
+                        Else
+                            ec.Description = Replace(Trim(Mid(strs(i), ns, InStr(ns, strs(i), " -", CompareMethod.Text) - ns)), """", "")
+                        End If
+
+                        'tmp = Space$(Len(ec.Description))
+                        'OemToChar ec.Description, tmp
+                        'ec.Description = tmp
+                    Else
+                        ec.Description = "No Description"
+                    End If
+
+                    'группа
+                    ns = InStr(1, strs(i), "-$g", CompareMethod.Text) + 3
+
+                    If ns > 3 Then
+                        ec.GroupNum = Asc(UCase(Trim(Mid(strs(i), ns, 1)))) - Asc("A")
+                    Else
+                        ec.GroupNum = 0
+                    End If
+
+                    'Ака
+                    ns = InStr(1, strs(i), "-p", CompareMethod.Text) + 2
+
+                    If ns > 2 Then
+                        If (InStr(ns, strs(i), " ", CompareMethod.Text) - ns) > 0 Then
+                            ec.AkA = Trim(Mid(strs(i), ns, InStr(ns, strs(i), " ", CompareMethod.Text) - ns))
+                        Else
+                            ec.AkA = Trim(Mid(strs(i), ns, Len(strs(i))))
+                        End If
+
+                    Else
+                        ec.AkA = GetString(HKEY_CURRENT_USER, "SOFTWARE\GFE\Options", "MainAddress", "unknown")
+                    End If
+
+                    'аплинк
+                    ''''''''''''''
+
+                    'все нашли, добавляем
+                    AddEchoToList(ec)
+                End If
+            End If
+
+        Next i
+
+        Exit Sub
+
+errHandler:
+
+        Select Case Err.Number
+
+            Case 53
+                MsgBox("Ошибка чтения конфигурации SQUISH!" & vbCrLf & "Файл " & strCfgName & " не найден!", MsgBoxStyle.Exclamation, My.Application.Info.Title)
+
+            Case Else
+                ErrorMessage(Err.Number, Err.Description, "EchoNamesRead::ReadSQUISHCfg")
+        End Select
+
+    End Sub
+
     ''' <summary>
     ''' Сортируем по группам предварительно отсортировав по именам внутри группы.
     ''' </summary>
