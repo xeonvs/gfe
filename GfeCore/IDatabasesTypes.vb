@@ -72,4 +72,50 @@ Public Interface IDatabasesTypes
         MSG_Deleted = &H80000000    ' Msg is deleted
     End Enum
 
+    ''' <summary>
+    ''' Атрибуты сообщения в FIPS базе
+    ''' </summary>
+    Enum FIPS_ATTRIBUTE
+        atMSGPRIVATE = &H1 'Частное письмо
+        atMSGCRASH = &H2 'Отправить немедленно
+        atMSGRECD = &H4 'Письмо получено
+        atMSGSENT = &H8 'Отправлено удачно
+        atMSGFILE = &H10 'К письму прикреплен аттач
+        atMSGFWD = &H20 'Письмо было отфорваржено
+        atMSGORPHAN = &H40 'Неизвестна нода-получатель
+        atMSGKILL = &H80 'Удалить после отправки
+        atMSGLOCAL = &H100 'Сообщение написано на Вашей станции
+        atMSGXX1 = &H200 '
+        atMSGXX2 = &H400 '
+        atMSGFRQ = &H800 'Файловый запрос
+        atMSGRRQ = &H1000 'Запрос принят
+        atMSGCPT = &H2000 'Письмо - подтверждение приема
+        atMSGARQ = &H4000 'Запрос пути следования
+        atMSGURQ = &H8000 'Обновление запроса
+    End Enum
+
+    ''' <summary>
+    ''' Атрибуты сообщения в Sqish базе
+    ''' </summary>
+    Enum SQ_ATTRIBUTE
+        MSG_PRIVATE = &H1   'Частное письмо
+        MSG_CRASH = &H2     'Отправить немедленно
+        MSG_RECD = &H4      'Письмо получено
+        MSG_SENT = &H8      'Отправлено удачно
+        MSG_FILE = &H10     'К письму прикреплен аттач
+        MSG_FWD = &H20      'Письмо было отфорваржено
+        MSG_ORPHAN = &H40   'Неизвестна нода-получатель
+        MSG_KILL = &H80     'Удалить после отправки
+        MSG_LOCAL = &H100   'Сообщение написано на Вашей станции
+        MSG_XX1 = &H200     'Hold
+        MSG_XX2 = &H400     'Reserved
+        MSG_FRQ = &H800     'Файловый запрос
+        MSG_RRQ = &H1000    'Запрос принят
+        MSG_CPT = &H2000    'Письмо - подтверждение приема
+        MSG_ARQ = &H4000    'Запрос пути следования
+        MSG_URQ = &H8000    'Обновление запроса
+        MSG_SCAN = &H10000L 'Squish scanned
+        MSG_UMSG = &H20000L 'Valid xmsg.umsg
+    End Enum
+
 End Interface
