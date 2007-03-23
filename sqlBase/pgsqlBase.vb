@@ -26,7 +26,8 @@ Public Class Database
     Private sqlConn As NpgsqlConnection
     Private unixtime As Date = DateTime.Parse("01.01.1970 00:00:00")
 
-#Region "Operators"
+#Region "Operators and params"
+    Dim msgCount As New NpgsqlCommand("""GetMessageCount""(:echo);")
     Dim hdrCommand As New NpgsqlCommand("""GetMessageHeaders""(:echo,:msg);")
     Dim msgCommand As New NpgsqlCommand("""GetMessage""(:echo,:msg);")
     Dim echoNameParam As New NpgsqlParameter("echo", DbType.String)
@@ -196,6 +197,7 @@ Public Class Database
                     lrGetCommand.Parameters.Add(echoNameParam)
                 End If
                 lrGetCommand.Connection = sqlConn
+                lrGetCommand.Parameters(0).Value = strEchoName
                 Return CInt(lrGetCommand.ExecuteScalar())
             Catch ex As Exception
                 Return -1
@@ -207,7 +209,9 @@ Public Class Database
                     lrSetCommand.Parameters.Add(echoNameParam)
                     lrSetCommand.Parameters.Add(msgNumParam)
                 End If
-                lrGetCommand.Connection = sqlConn
+                lrSetCommand.Parameters(0).Value = strEchoName
+                lrSetCommand.Parameters(1).Value = msgNumber
+                lrSetCommand.Connection = sqlConn
                 lrSetCommand.ExecuteNonQuery()
                 Return 0
             Catch ex As Exception
@@ -262,9 +266,7 @@ Public Class Database
     End Property
 
     Public ReadOnly Property MessageCountByEcho(ByVal EchoPath As String) As Integer Implements IDatabases.MessageCountByEcho
-        Get
-            Dim Command As NpgsqlCommand, result As Object
-
+        Get           
             If IsNothing(sqlConn) Then
                 sqlConn = New NpgsqlConnection(EchoPath)
             End If
@@ -274,13 +276,16 @@ Public Class Database
             End If
 
             Try
-                Command = New NpgsqlCommand("""GetMessageCount""('" & strEchoName & "')", sqlConn)
-                Command.CommandType = CommandType.StoredProcedure
-                result = Command.ExecuteScalar()                
-                Return CInt(result)
+                If msgCount.Parameters.Count = 0 Then
+                    msgCount.Parameters.Add(echoNameParam)
+                End If
+                msgCount.Parameters(0).Value = strEchoName
+                msgCount.Connection = sqlConn
+                msgCount.CommandType = CommandType.StoredProcedure
+                Return CInt(msgCount.ExecuteScalar())
             Catch ex As Exception
                 '
-            End Try            
+            End Try
         End Get
     End Property
 
