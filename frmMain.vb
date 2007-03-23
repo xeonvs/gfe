@@ -161,7 +161,7 @@ Public Class frmMain
                         MsgBox("Выбранный тип (" & clsEchos.GetEchoTypeByNum(ECNum).ToString & ") базы не поддерживается или ошибка загрузки модуля базы.", MsgBoxStyle.Critical)
                         Exit For
                     End Try
-
+                    cdb.EchoName = clsEchos.GetEchoNameByNum(ECNum)
                     LI.SubItems.Add(CStr(cdb.MessageCountByEcho(clsEchos.GetEchoFileByNum(ECNum))))
                     LI.SubItems.Add(clsEchos.GetEchoDescriptionByNum(ECNum))
                     LI.SubItems.Add(clsEchos.GetEchoAkAByNum(ECNum))
@@ -524,7 +524,8 @@ Public Class frmMain
         Else
             Dim ecNum As Integer = clsEchos.GetEchoNumByName(EchoList.SelectedItems.Item(0).Text)
             curEcho.DBName = clsEchos.GetEchoFileByNum(ecNum)
-            MailList.VirtualListSize = curEcho.MessageCountByEcho(clsEchos.GetEchoFileByNum(ecNum))
+            curEcho.EchoName = EchoList.SelectedItems.Item(0).Text
+            MailList.VirtualListSize = curEcho.MessageCountByEcho(curEcho.DBName)
 
         End If
 

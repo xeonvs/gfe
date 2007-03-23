@@ -81,7 +81,7 @@ Public Class Database
         End Set
     End Property
 
-    Public Sub DeleteMessageByNum(ByRef NumberMessage As Integer) Implements GfeCore.IDatabases.DeleteMessageByNum
+    Public Sub DeleteMessageByNum(ByVal NumberMessage As Integer) Implements GfeCore.IDatabases.DeleteMessageByNum
 
     End Sub
 
@@ -112,7 +112,7 @@ Public Class Database
         End Set
     End Property
 
-    Public Sub GetHeadesByNum(ByRef NumberMessage As Integer) Implements GfeCore.IDatabases.GetHeadesByNum
+    Public Sub GetHeadesByNum(ByVal NumberMessage As Integer) Implements GfeCore.IDatabases.GetHeadesByNum
         If NumberMessage > numMessages Then
             Exit Sub
         ElseIf NumberMessage = 0 Then
@@ -158,11 +158,11 @@ Public Class Database
 
     End Sub
 
-    Public Sub GetHeadesByNumAll(ByRef NumberMessage As Integer) Implements GfeCore.IDatabases.GetHeadesByNumAll
+    Public Sub GetHeadesByNumAll(ByVal NumberMessage As Integer) Implements GfeCore.IDatabases.GetHeadesByNumAll
 
     End Sub
 
-    Public Sub GetHeadesByNumForTree(ByRef NumberMessage As Integer) Implements GfeCore.IDatabases.GetHeadesByNumForTree
+    Public Sub GetHeadesByNumForTree(ByVal NumberMessage As Integer) Implements GfeCore.IDatabases.GetHeadesByNumForTree
         If NumberMessage > numMessages Then
             Exit Sub
         ElseIf NumberMessage = 0 Then
@@ -196,11 +196,11 @@ Public Class Database
 
     End Sub
 
-    Public Function GetLastReadMsgNum(Optional ByRef msgNumber As Integer = 0) As Integer Implements GfeCore.IDatabases.GetLastReadMsgNum
+    Public Function GetLastReadMsgNum(Optional ByVal msgNumber As Integer = 0) As Integer Implements GfeCore.IDatabases.GetLastReadMsgNum
 
     End Function
 
-    Public Sub GetMessageByNum(ByRef NumberMessage As Integer) Implements GfeCore.IDatabases.GetMessageByNum
+    Public Sub GetMessageByNum(ByVal NumberMessage As Integer) Implements GfeCore.IDatabases.GetMessageByNum
         If NumberMessage > numMessages Then
             Exit Sub
         ElseIf NumberMessage = 0 Then
@@ -229,11 +229,11 @@ Public Class Database
 
     End Sub
 
-    Public Function GetMessageDumpByNum(ByRef NumberMessage As Integer) As String Implements GfeCore.IDatabases.GetMessageDumpByNum
+    Public Function GetMessageDumpByNum(ByVal NumberMessage As Integer) As String Implements GfeCore.IDatabases.GetMessageDumpByNum
         Return ""
     End Function
 
-    Public Function GetMessageKlugeByNum(ByRef NumberMessage As Integer) As String Implements GfeCore.IDatabases.GetMessageKlugeByNum
+    Public Function GetMessageKlugeByNum(ByVal NumberMessage As Integer) As String Implements GfeCore.IDatabases.GetMessageKlugeByNum
         Return ""
     End Function
 
@@ -281,7 +281,7 @@ Public Class Database
         End Set
     End Property
 
-    Public Function MessageStatus(ByRef NumberMessage As Integer, Optional ByRef Status As Integer = -1) As Integer Implements GfeCore.IDatabases.MessageStatus
+    Public Function MessageStatus(ByVal NumberMessage As Integer, Optional ByVal Status As Integer = -1) As Integer Implements GfeCore.IDatabases.MessageStatus
 
     End Function
 

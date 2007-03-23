@@ -6,7 +6,7 @@ Public Class Database
 #Region "API"
     'Private Declare Sub RtlMoveMemory Lib "kernel32.dll" (ByRef dst As Any, ByRef Src As Any, ByVal cb As Integer)
     Private Declare Function CreateFile Lib "kernel32" Alias "CreateFileA" (ByVal lpFileName As String, ByVal dwDesiredAccess As Integer, ByVal dwShareMode As Integer, ByVal lpSecurityAttributes As Integer, ByVal dwCreationDisposition As Integer, ByVal dwFlagsAndAttributes As Integer, ByVal hTemplateFile As Integer) As Integer
-    Private Declare Function ReadFile Lib "kernel32" (ByVal hFile As Integer, ByRef lpBuffer As Integer, ByVal nNumberOfBytesToRead As Integer, ByRef lpNumberOfBytesRead As Integer, ByVal lpOverlapped As Integer) As Integer
+    Private Declare Function ReadFile Lib "kernel32" (ByVal hFile As Integer, ByRef lpBuffer As Integer, ByVal nNumberOfBytesToRead As Integer, ByVal lpNumberOfBytesRead As Integer, ByVal lpOverlapped As Integer) As Integer
     Private Declare Function SetFilePointer Lib "kernel32" (ByVal hFile As Integer, ByVal lDistanceToMove As Integer, ByRef lpDistanceToMoveHigh As Integer, ByVal dwMoveMethod As Integer) As Integer
     Private Declare Function GetFileSize Lib "kernel32" (ByVal hFile As Integer, ByRef lpFileSizeHigh As Integer) As Integer
     Private Declare Function CloseHandle Lib "kernel32" (ByVal hObject As Integer) As Integer
@@ -76,7 +76,7 @@ Public Class Database
         End Set
     End Property
 
-    Public Sub DeleteMessageByNum(ByRef NumberMessage As Integer) Implements GfeCore.IDatabases.DeleteMessageByNum
+    Public Sub DeleteMessageByNum(ByVal NumberMessage As Integer) Implements GfeCore.IDatabases.DeleteMessageByNum
 
     End Sub
 
@@ -107,33 +107,33 @@ Public Class Database
         End Set
     End Property
 
-    Public Sub GetHeadesByNum(ByRef NumberMessage As Integer) Implements GfeCore.IDatabases.GetHeadesByNum
+    Public Sub GetHeadesByNum(ByVal NumberMessage As Integer) Implements GfeCore.IDatabases.GetHeadesByNum
         msgFrom = "Xeon"
         msgTo = "All"
         msgSubj = "Squish TeZt"
     End Sub
 
-    Public Sub GetHeadesByNumAll(ByRef NumberMessage As Integer) Implements GfeCore.IDatabases.GetHeadesByNumAll
+    Public Sub GetHeadesByNumAll(ByVal NumberMessage As Integer) Implements GfeCore.IDatabases.GetHeadesByNumAll
 
     End Sub
 
-    Public Sub GetHeadesByNumForTree(ByRef NumberMessage As Integer) Implements GfeCore.IDatabases.GetHeadesByNumForTree
+    Public Sub GetHeadesByNumForTree(ByVal NumberMessage As Integer) Implements GfeCore.IDatabases.GetHeadesByNumForTree
 
     End Sub
 
-    Public Function GetLastReadMsgNum(Optional ByRef msgNumber As Integer = 0) As Integer Implements GfeCore.IDatabases.GetLastReadMsgNum
+    Public Function GetLastReadMsgNum(Optional ByVal msgNumber As Integer = 0) As Integer Implements GfeCore.IDatabases.GetLastReadMsgNum
 
     End Function
 
-    Public Sub GetMessageByNum(ByRef NumberMessage As Integer) Implements GfeCore.IDatabases.GetMessageByNum
+    Public Sub GetMessageByNum(ByVal NumberMessage As Integer) Implements GfeCore.IDatabases.GetMessageByNum
 
     End Sub
 
-    Public Function GetMessageDumpByNum(ByRef NumberMessage As Integer) As String Implements GfeCore.IDatabases.GetMessageDumpByNum
+    Public Function GetMessageDumpByNum(ByVal NumberMessage As Integer) As String Implements GfeCore.IDatabases.GetMessageDumpByNum
         Return ""
     End Function
 
-    Public Function GetMessageKlugeByNum(ByRef NumberMessage As Integer) As String Implements GfeCore.IDatabases.GetMessageKlugeByNum
+    Public Function GetMessageKlugeByNum(ByVal NumberMessage As Integer) As String Implements GfeCore.IDatabases.GetMessageKlugeByNum
         Return ""
     End Function
 
@@ -191,7 +191,7 @@ Public Class Database
         End Set
     End Property
 
-    Public Function MessageStatus(ByRef NumberMessage As Integer, Optional ByRef Status As Integer = -1) As Integer Implements GfeCore.IDatabases.MessageStatus
+    Public Function MessageStatus(ByVal NumberMessage As Integer, Optional ByVal Status As Integer = -1) As Integer Implements GfeCore.IDatabases.MessageStatus
 
     End Function
 
