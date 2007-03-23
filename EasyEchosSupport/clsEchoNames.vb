@@ -669,7 +669,6 @@ errHandler:
     ''' </summary>
     ''' <remarks>версия 1.4 и старше</remarks>
     Private Sub ReadHPTCfg()
-        Dim tmp As String
         Dim strs() As String
         Dim cols() As String
         Dim ns, j, i, k As Integer

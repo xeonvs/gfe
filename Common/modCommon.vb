@@ -39,12 +39,11 @@ Module modCommon
     Public Sub LoadDatabaseModules()
         Dim di As New DirectoryInfo(AppRun)
         Dim modules() As FileInfo = di.GetFiles("*Base.dll")
-
+        Dim a As Assembly
 
         For Each fModule As FileInfo In modules
             Dim cModule As String = fModule.Name
             Dim ModuleName As String = cModule.Replace(".dll", "")
-            Dim a As Assembly
 
             Try
                 a = Assembly.LoadFrom(cModule)

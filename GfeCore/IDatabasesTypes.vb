@@ -13,6 +13,7 @@ Public Interface IDatabasesTypes
         Jam = 3         'JAM base
         Passthru = 7    'Pasthru base
         FIPS = 9        'FIPS BASE
+        SQL = 10        'PostgreSQL Base
         Unknown = -1    'Unknown base
     End Enum
 
