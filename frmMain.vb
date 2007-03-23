@@ -449,6 +449,8 @@ Public Class frmMain
     End Sub
 
     Private Sub DisplayMessage(ByVal MessageNumber As Integer)
+        HtmlMailViewer.Document.Body.InnerHtml = ""
+
         curEcho.GetHeadesByNum(MessageNumber)
         curEcho.GetMessageByNum(MessageNumber)
 
@@ -471,7 +473,7 @@ Public Class frmMain
                                 "margin: 2px; " & _
                                 "background-color: " & Win32ColorToHtml(msgBackColor) & "; " & _
                                 "color: " & Win32ColorToHtml(msgMainTextColor)
-            
+
             htm = "<font size=""2"" color=""" & Win32ColorToHtml(msgMainTextColor) & """>" & curEcho.MessageText & "</font>"
             htm = htm.Replace(vbCr, "<br>" & vbCrLf)
 
@@ -511,7 +513,7 @@ Public Class frmMain
             '?
         End Try
 
-        '«агрузка начинаетс€ только при отрисовке списка.
+        '«агрузка начинаетс€ только при отрисовке списка.        
         MailList.VirtualListSize = 0
         MailList.VirtualMode = True        
 

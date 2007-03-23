@@ -26,6 +26,17 @@ Public Class Database
     Private sqlConn As NpgsqlConnection
     Private unixtime As Date = DateTime.Parse("01.01.1970 00:00:00")
 
+#Region "Operators"
+    Dim hdrCommand As New NpgsqlCommand("""GetMessageHeaders""(:echo,:msg);")
+    Dim msgCommand As New NpgsqlCommand("""GetMessage""(:echo,:msg);")
+    Dim echoNameParam As New NpgsqlParameter("echo", DbType.String)
+    Dim msgNumParam As New NpgsqlParameter("msg", DbType.Int32)
+
+    Dim lrGetCommand As New NpgsqlCommand("SELECT  ""LastreadMsgId"" From ""Areas"" WHERE ""AreaName""=':echo';")
+    Dim lrSetCommand As New NpgsqlCommand("UPDATE ""Areas"" SET ""LastreadMsgId""=:msg WHERE ""AreaName""=':echo';")
+
+#End Region
+
     Public ReadOnly Property BaseType() As IDatabasesTypes.enmBaseType Implements IDatabases.BaseType
         Get
             Return IDatabasesTypes.enmBaseType.SQL
@@ -120,30 +131,33 @@ Public Class Database
         End If
 
         If sqlConn.State = ConnectionState.Closed Then
-            sqlConn.Open()
+            sqlConn.Open()            
         End If
 
-        Dim Command As New NpgsqlCommand("""GetMessageHeaders""(:echo,:msg);", sqlConn), dr As NpgsqlDataReader
-        Command.CommandType = CommandType.StoredProcedure
-        Command.Parameters.Add(New NpgsqlParameter("echo", DbType.String))
-        Command.Parameters.Add(New NpgsqlParameter("msg", DbType.Int32))
-        Command.Parameters(0).Value = strEchoName
-        Command.Parameters(1).Value = NumberMessage
-        dr = Command.ExecuteReader
+        If hdrCommand.Parameters.Count = 0 Then
+            hdrCommand.CommandType = CommandType.StoredProcedure
+            hdrCommand.Parameters.Add(echoNameParam)
+            hdrCommand.Parameters.Add(msgNumParam)
+        End If
+
+        Dim dr As NpgsqlDataReader
+        hdrCommand.Connection = sqlConn        
+        hdrCommand.Parameters(0).Value = strEchoName
+        hdrCommand.Parameters(1).Value = NumberMessage
+        dr = hdrCommand.ExecuteReader
         dr.Read()
-        With Me
             'dr("column_name") - весьма медленный метод
-            'исспользование в циклах dr.GetOrdinal("column_name") значительно эффективнее
-            .From = dr("fromname")
-            .FromAddr = dr("fromaddr")
-            .To = dr("toname")
-            .ToAddr = dr("toaddr")
-            .Subject = Encoding.GetEncoding(866).GetString(Encoding.Default.GetBytes(dr("subject")))
-            .DateArrived = DateTime.Parse(dr("msgdate")).Subtract(unixtime).TotalSeconds
-            .DateWritten = .DateArrived
-            .MessageFlags = dr("attr")
-            .ReplayTo = dr("replayid")
-        End With
+        'исспользование в циклах dr.GetOrdinal("column_name") значительно эффективнее
+        msgFrom = dr("fromname")
+        msgFromAddr = dr("fromaddr")
+        msgTo = dr("toname")
+        msgToAddr = dr("toaddr")
+        msgSubj = Encoding.GetEncoding(866).GetString(Encoding.Default.GetBytes(dr("subject")))
+        msgDateArrived = DateTime.Parse(dr("msgdate")).Subtract(unixtime).TotalSeconds
+        msgDateWritten = msgDateArrived
+        msgFlags = dr("attr")
+        msgReplayTo = dr("replayid")
+
     End Sub
 
     Public Sub GetHeadesByNumAll(ByVal NumberMessage As Integer) Implements IDatabases.GetHeadesByNumAll
@@ -160,9 +174,45 @@ Public Class Database
 
     End Sub
 
+    ''' <summary>
+    ''' Отображает\сохраняет статус последнего прочитанного письма.
+    ''' </summary>
+    ''' <param name="msgNumber"></param>
+    ''' <returns></returns>
+    ''' <remarks></remarks>
     Public Function GetLastReadMsgNum(Optional ByVal msgNumber As Integer = 0) As Integer Implements IDatabases.GetLastReadMsgNum
         If IsNothing(sqlConn) Then
             Exit Function
+        End If
+
+        If sqlConn.State = ConnectionState.Closed Then
+            sqlConn.Open()
+        End If
+
+        If msgNumber = 0 Then
+            'read
+            Try
+                If lrGetCommand.Parameters.Count = 0 Then
+                    lrGetCommand.Parameters.Add(echoNameParam)
+                End If
+                lrGetCommand.Connection = sqlConn
+                Return CInt(lrGetCommand.ExecuteScalar())
+            Catch ex As Exception
+                Return -1
+            End Try
+        Else
+            'write
+            Try
+                If lrSetCommand.Parameters.Count = 0 Then
+                    lrSetCommand.Parameters.Add(echoNameParam)
+                    lrSetCommand.Parameters.Add(msgNumParam)
+                End If
+                lrGetCommand.Connection = sqlConn
+                lrSetCommand.ExecuteNonQuery()
+                Return 0
+            Catch ex As Exception
+                Return -1
+            End Try
         End If
 
     End Function
@@ -171,6 +221,26 @@ Public Class Database
         If IsNothing(sqlConn) Then
             Exit Sub
         End If
+
+        If sqlConn.State = ConnectionState.Closed Then
+            sqlConn.Open()            
+        End If
+
+        If msgCommand.Parameters.Count = 0 Then
+            msgCommand.CommandType = CommandType.StoredProcedure
+            msgCommand.Parameters.Add(echoNameParam)
+            msgCommand.Parameters.Add(msgNumParam)
+        End If
+
+        Dim dr As NpgsqlDataReader
+        msgCommand.Connection = sqlConn
+        msgCommand.Parameters(0).Value = strEchoName
+        msgCommand.Parameters(1).Value = NumberMessage
+        dr = msgCommand.ExecuteReader
+        dr.Read()
+        'dr("column_name") - весьма медленный метод
+        'исспользование в циклах dr.GetOrdinal("column_name") значительно эффективнее        
+        msgText = Encoding.GetEncoding(866).GetString(Encoding.Default.GetBytes(dr("messagetext")))
 
     End Sub
 
@@ -229,7 +299,7 @@ Public Class Database
 
     Public Property MessageText() As String Implements IDatabases.MessageText
         Get
-            Return ""
+            Return msgText
         End Get
         Set(ByVal value As String)
             msgText = value
@@ -262,7 +332,7 @@ Public Class Database
     End Property
     Public Property ReplayNextS() As String Implements IDatabases.ReplayNextS
         Get
-            Return ""
+            Return vbNullString
         End Get
         Set(ByVal value As String)
             'null for msg
