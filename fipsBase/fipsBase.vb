@@ -58,7 +58,7 @@ Public Class Database
     End Property
 
     Public Sub DeleteMessageByNum(ByRef NumberMessage As Integer) Implements GfeCore.IDatabases.DeleteMessageByNum
-
+        '
     End Sub
 
     Public Property EchoName() As String Implements GfeCore.IDatabases.EchoName
@@ -89,9 +89,7 @@ Public Class Database
     End Property
 
     Public Sub GetHeadesByNum(ByRef NumberMessage As Integer) Implements GfeCore.IDatabases.GetHeadesByNum
-        msgFrom = "Xeon"
-        msgTo = "All"
-        msgSubj = "FIPS TeZt"
+        '
     End Sub
 
     Public Sub GetHeadesByNumAll(ByRef NumberMessage As Integer) Implements GfeCore.IDatabases.GetHeadesByNumAll

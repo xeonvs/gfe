@@ -206,7 +206,7 @@ Public Class Database
         End If
 
         Dim sublen, ss, dl, loid As Integer
-        Dim nn As String
+        Dim nn As String = ""
 
         'забираем заголовки
         fsH.Seek(GetMessageOffsetFromIndex(NumberMessage - 1) + 8, SeekOrigin.Begin)
