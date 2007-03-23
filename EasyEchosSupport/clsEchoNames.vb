@@ -119,17 +119,17 @@ Public Class clsEchoNames
     Public Sub New()
         MyBase.New()
 
-        ReDim TossersNames(5)
+        ReDim TossersNames(6)
         TossersNames(0) = "Areas.bbs"
         TossersNames(1) = "FastEcho 1.46.1"
         TossersNames(2) = "HPT 1.4"
         TossersNames(3) = "BBToss 2.50"
         TossersNames(4) = "FIPS"
         TossersNames(5) = "squish.cfg"
+        TossersNames(6) = "DRIM Tosser"
         'end tossers
 
     End Sub
-
     ''' <summary>
     ''' Возвращает версию библиотеки.
     ''' </summary>
@@ -138,7 +138,6 @@ Public Class clsEchoNames
             Return "EasyEchosSupport " & CStr(My.Application.Info.Version.Major) & "." & CStr(My.Application.Info.Version.Minor) & " build " & CStr(My.Application.Info.Version.Revision)
         End Get
     End Property
-
     ''' <summary>
     ''' Получает/устанавливает рабочий файл конфигурации
     ''' </summary>
@@ -150,7 +149,6 @@ Public Class clsEchoNames
             strCfgName = Value
         End Set
     End Property
-
     ''' <summary>
     ''' Возвращает Имя тоссера по его Id
     ''' </summary>
@@ -166,7 +164,6 @@ Public Class clsEchoNames
 
         End Get
     End Property
-
     ''' <summary>
     ''' Возвращает кол-во поддерживаемых тоссеров
     ''' </summary>
@@ -175,7 +172,6 @@ Public Class clsEchoNames
             Return UBound(TossersNames)
         End Get
     End Property
-
     ''' <summary>
     ''' Возвращает Id вероятного тоссера для данного конфига пользуясь эвристиками
     ''' </summary>
@@ -235,7 +231,6 @@ Public Class clsEchoNames
             Return EchoRefsCount.ToString
         End Get
     End Property
-
     ''' <summary>
     ''' Возвращеает полный путь и файл содержащий эхоконференцию по ее имени
     ''' </summary>
@@ -256,7 +251,6 @@ Public Class clsEchoNames
             Return vbNullString
         End Get
     End Property
-
     ''' <summary>
     ''' Возвращеает полный путь и файл к эхоконференции по ее номеру
     ''' </summary>
@@ -273,7 +267,6 @@ Public Class clsEchoNames
 
         End Get
     End Property
-
     ''' <summary>
     ''' Возвращеает полный путь и файл к эхоконференции по ее номеру
     ''' </summary>
@@ -290,7 +283,6 @@ Public Class clsEchoNames
 
         End Get
     End Property
-
     ''' <summary>
     ''' Возвращеает описание по номеру эхи
     ''' </summary>
@@ -307,7 +299,6 @@ Public Class clsEchoNames
 
         End Get
     End Property
-
     ''' <summary>
     ''' Возвращает группу эхи по ее номеру
     ''' </summary>
@@ -324,7 +315,6 @@ Public Class clsEchoNames
 
         End Get
     End Property
-
     ''' <summary>
     ''' Возвращеает aka по номеру эхи
     ''' </summary>
@@ -341,7 +331,6 @@ Public Class clsEchoNames
 
         End Get
     End Property
-
     ''' <summary>
     ''' Возвращеает Тип эхи по номеру    
     ''' </summary>
@@ -359,7 +348,6 @@ Public Class clsEchoNames
 
         End Get
     End Property
-
     ''' <summary>
     ''' Возвращает номер эхи по ее имени
     ''' </summary>
@@ -383,7 +371,6 @@ Public Class clsEchoNames
             Return -1
         End Get
     End Property
-
     ''' <summary>
     ''' Возвращает аплинка для эхи по номеру
     ''' </summary>
@@ -401,7 +388,6 @@ Public Class clsEchoNames
 
         End Get
     End Property
-
     ''' <summary>
     ''' Возвращает всех подписчиков данной эхи
     ''' </summary>
@@ -454,6 +440,10 @@ Public Class clsEchoNames
             Case 5
                 ReadSQUISHCfg()
                 lngCurTosser = 5
+
+            Case 6
+                ReadDRIMCfg()
+                lngCurTosser = 6
 
             Case Else
                 MsgBox("Ошибка в параметре реестра" & vbCrLf & "HCU\SOFTWARE\GFE\Options\TosserId" & vbCrLf & "Проверьте настройки типа эхопроцессора.", MsgBoxStyle.Exclamation + MsgBoxStyle.SystemModal, My.Application.Info.Title)
@@ -902,54 +892,6 @@ errHandler:
 
     End Sub
 
-    '
-    'вспомогательные функции
-    ''' <summary>
-    ''' Обрабатывает конфиг HPT вместе с инклюдами.
-    ''' </summary>
-    ''' <returns>Возвращает конфиг HPT слитый в единую строку</returns>
-    Private Function ConstructHPTConfig(ByRef baseConfig As String) As String
-        Dim rootBuff, tmp As String
-        Dim ff As Integer
-        Dim strt, fn As Integer
-        Dim fname As String
-
-        ff = FreeFile()
-        FileOpen(ff, baseConfig, OpenMode.Binary)
-        rootBuff = Space(LOF(ff))
-        FileGet(ff, rootBuff)
-        FileClose(ff)
-
-        Do
-            strt = InStr(strt + 1, rootBuff, "include ", CompareMethod.Text)
-
-            If strt = 0 Then
-                Exit Do
-            End If
-
-            fn = InStr(strt, rootBuff, vbLf)
-            fname = Replace(Mid(rootBuff, strt + 8, fn - (strt + 8)), vbCrLf, "")
-
-            If InStr(1, fname, ";") = 0 And InStr(1, fname, "$") = 0 And InStr(1, fname, ")") = 0 And InStr(1, fname, ",") = 0 And InStr(1, fname, "(") = 0 Then
-
-                ff = FreeFile()
-                FileOpen(ff, fname, OpenMode.Binary)
-                tmp = Space(LOF(ff))
-                FileGet(ff, tmp)
-                FileClose(ff)
-
-                rootBuff = rootBuff & tmp
-
-            Else
-                strt = fn
-            End If
-
-        Loop Until strt = 0
-
-        Return rootBuff
-
-    End Function
-
     ''' <summary>
     ''' читает конфигурацию из suish.cfg
     ''' </summary>
@@ -1069,6 +1011,108 @@ errHandler:
         End Select
 
     End Sub
+
+    ''' <summary>
+    ''' Читает конфигурацию DRIM Tosser
+    ''' </summary>
+    ''' <remarks></remarks>
+    Public Sub ReadDRIMCfg()
+        Dim cIni As New clsINI
+        Dim ec As EchoRefType, tType As Integer
+
+        If Not My.Computer.FileSystem.FileExists(strCfgName) Then
+            Return
+        End If
+
+        cIni.FileName = strCfgName
+
+        If cIni.Value("Common", "TosserType").Length <> 0 Then
+            tType = CInt(cIni.Value("Common", "TosserType"))
+        End If
+
+        Select Case tType
+            Case 1, 2, 3, 7
+            Case 9 'FIPS
+                'изменяем strCfgName=Msgbase=..... и вызываем
+                'ReadFIPSCfg()
+            Case 10 'SQL
+                Try
+                    Dim connStr As String = Replace(cIni.Value("Paths", "Msgbase"), "|", ";")
+                    Dim sqlConn As New Npgsql.NpgsqlConnection(connStr)
+                    Dim Command As New Npgsql.NpgsqlCommand("SELECT * FROM ""Areas"";", sqlConn)
+                    sqlConn.Open()
+                    Dim dr As Npgsql.NpgsqlDataReader = Command.ExecuteReader()
+
+                    While dr.Read()
+                        With ec
+                            .EName = dr("AreaName").ToString
+                            .EFile = sqlConn.ConnectionString
+                            .AkA = dr("AKA").ToString.Replace(vbLf, "")
+                            .Description = dr("Description").ToString
+                            .EchoType = IDatabasesTypes.enmBaseType.SQL                            
+                        End With
+
+                        AddEchoToList(ec) 'добавляем в лист
+
+                    End While
+
+                    sqlConn.Close()
+
+                Catch ex As Exception
+
+                End Try
+            Case Else
+                'не поддерживаемый тип тоссера
+        End Select
+    End Sub
+
+#Region "вспомогательные функции"
+
+    ''' <summary>
+    ''' Обрабатывает конфиг HPT вместе с инклюдами.
+    ''' </summary>
+    ''' <returns>Возвращает конфиг HPT слитый в единую строку</returns>
+    Private Function ConstructHPTConfig(ByRef baseConfig As String) As String
+        Dim rootBuff, tmp As String
+        Dim ff As Integer
+        Dim strt, fn As Integer
+        Dim fname As String
+
+        ff = FreeFile()
+        FileOpen(ff, baseConfig, OpenMode.Binary)
+        rootBuff = Space(LOF(ff))
+        FileGet(ff, rootBuff)
+        FileClose(ff)
+
+        Do
+            strt = InStr(strt + 1, rootBuff, "include ", CompareMethod.Text)
+
+            If strt = 0 Then
+                Exit Do
+            End If
+
+            fn = InStr(strt, rootBuff, vbLf)
+            fname = Replace(Mid(rootBuff, strt + 8, fn - (strt + 8)), vbCrLf, "")
+
+            If InStr(1, fname, ";") = 0 And InStr(1, fname, "$") = 0 And InStr(1, fname, ")") = 0 And InStr(1, fname, ",") = 0 And InStr(1, fname, "(") = 0 Then
+
+                ff = FreeFile()
+                FileOpen(ff, fname, OpenMode.Binary)
+                tmp = Space(LOF(ff))
+                FileGet(ff, tmp)
+                FileClose(ff)
+
+                rootBuff = rootBuff & tmp
+
+            Else
+                strt = fn
+            End If
+
+        Loop Until strt = 0
+
+        Return rootBuff
+
+    End Function
 
     ''' <summary>
     ''' Сортируем по группам предварительно отсортировав по именам внутри группы.
@@ -1322,7 +1366,6 @@ errHandler:
         CutOfNullChar = IIf(bNotTrimString, Trim$(sString), sString)
     End Function
 
-
     Private Sub ErrorMessage(ByRef ErrNumber As Integer, ByRef Description As String, ByRef Where As String)
         MsgBox("Ошибка #" & ErrNumber & vbCrLf & _
                "В: " & Where & vbCrLf & _
@@ -1334,5 +1377,7 @@ errHandler:
         Erase TossersNames
         MyBase.Finalize()
     End Sub
+
+#End Region
 
 End Class

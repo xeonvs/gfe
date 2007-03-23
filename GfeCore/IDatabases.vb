@@ -106,41 +106,41 @@ Public Interface IDatabases
     ''' <summary>
     ''' Загружает текст сообщения по номеру
     ''' </summary>
-    Sub GetMessageByNum(ByRef NumberMessage As Integer)
+    Sub GetMessageByNum(ByVal NumberMessage As Integer)
 
     ''' <summary>
     ''' Возвращает Дамп сообщения по номеру
     ''' </summary>
-    Function GetMessageDumpByNum(ByRef NumberMessage As Integer) As String
+    Function GetMessageDumpByNum(ByVal NumberMessage As Integer) As String
 
     ''' <summary>
     ''' Загружает Заголовки письма по номеру
     ''' </summary>
-    Sub GetHeadesByNum(ByRef NumberMessage As Integer)
+    Sub GetHeadesByNum(ByVal NumberMessage As Integer)
 
     ''' <summary>
     ''' Загружает Заголовки письма по номеру
     ''' </summary>
     ''' <remarks>Исспользуется при построении дерева</remarks>
-    Sub GetHeadesByNumForTree(ByRef NumberMessage As Integer)
+    Sub GetHeadesByNumForTree(ByVal NumberMessage As Integer)
 
     ''' <summary>
     ''' Загружает все возможные заголовки письма
     ''' </summary>
     ''' <remarks>Очень медленный метод</remarks>
-    Sub GetHeadesByNumAll(ByRef NumberMessage As Integer)
+    Sub GetHeadesByNumAll(ByVal NumberMessage As Integer)
 
     ''' <summary>
     ''' Возвращает номер последнего прочитанного мессага
     ''' </summary>
     ''' <param name="msgNumber">Если не 0 то записывает информацию</param>
-    Function GetLastReadMsgNum(Optional ByRef msgNumber As Integer = 0) As Integer
+    Function GetLastReadMsgNum(Optional ByVal msgNumber As Integer = 0) As Integer
 
     ''' <summary>
     ''' Возвращает письмо с кладжами.
     ''' </summary>
     ''' <param name="NumberMessage"></param>
-    Function GetMessageKlugeByNum(ByRef NumberMessage As Integer) As String
+    Function GetMessageKlugeByNum(ByVal NumberMessage As Integer) As String
 
     ''' <summary>
     ''' Открывает базу сообщений
@@ -155,14 +155,14 @@ Public Interface IDatabases
     ''' <summary>
     ''' Удаляет сообщение из базы
     ''' </summary>
-    Sub DeleteMessageByNum(ByRef NumberMessage As Integer)
+    Sub DeleteMessageByNum(ByVal NumberMessage As Integer)
 
     ''' <summary>
     ''' Устанавливает статус сообщения в нутры базы
     ''' </summary>
     ''' <param name="Status">при значении -1 возвращает статус текущего мессага</param>
     ''' <remarks>Работает не со всеми тоссерами</remarks>
-    Function MessageStatus(ByRef NumberMessage As Integer, Optional ByRef Status As Integer = -1) As Integer
+    Function MessageStatus(ByVal NumberMessage As Integer, Optional ByVal Status As Integer = -1) As Integer
 
 End Interface
 
