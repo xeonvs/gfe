@@ -23,6 +23,7 @@ Public Class Database
     Private msgReplayFirst As Integer   'local copy
     Private msgReplayNext As Integer    'local copy
     Private bolDefault As Boolean
+    Private serverCodePage As Integer
     Private sqlConn As NpgsqlConnection
     Private unixtime As Date = DateTime.Parse("01.01.1970 00:00:00")
 
@@ -153,7 +154,11 @@ Public Class Database
         msgFromAddr = dr("fromaddr")
         msgTo = dr("toname")
         msgToAddr = dr("toaddr")
-        msgSubj = Encoding.GetEncoding(866).GetString(Encoding.Default.GetBytes(dr("subject")))
+        If serverCodePage <> Encoding.Default.CodePage Then
+            msgSubj = Encoding.GetEncoding(serverCodePage).GetString(Encoding.Default.GetBytes(dr("subject")))
+        Else
+            msgSubj = dr("subject")
+        End If
         msgDateArrived = DateTime.Parse(dr("msgdate")).Subtract(unixtime).TotalSeconds
         msgDateWritten = msgDateArrived
         msgFlags = dr("attr")
@@ -243,8 +248,12 @@ Public Class Database
         dr = msgCommand.ExecuteReader
         dr.Read()
         'dr("column_name") - весьма медленный метод
-        'исспользование в циклах dr.GetOrdinal("column_name") значительно эффективнее        
-        msgText = Encoding.GetEncoding(866).GetString(Encoding.Default.GetBytes(dr("messagetext")))
+        'исспользование в циклах dr.GetOrdinal("column_name") значительно эффективнее
+        If serverCodePage <> Encoding.Default.CodePage Then
+            msgText = Encoding.GetEncoding(serverCodePage).GetString(Encoding.Default.GetBytes(dr("messagetext")))
+        Else
+            msgText = dr("messagetext")
+        End If
 
     End Sub
 
@@ -314,6 +323,9 @@ Public Class Database
     Public Sub OpenDB() Implements IDatabases.OpenDB
         Try
             sqlConn = New NpgsqlConnection(strDBname)
+            sqlConn.Open()
+            Dim cmd As New NpgsqlCommand("SHOW SERVER_ENCODING;", sqlConn)
+            serverCodePage = CInt(CStr(cmd.ExecuteScalar()).Replace("WIN", ""))
         Catch ex As Exception
 
         End Try
