@@ -28,10 +28,14 @@ Module modSettings
     Public Function GetGFEOption(ByVal OptionPath As String, _
                                  ByVal OptionName As String, _
                                    Optional ByVal DefaultValue As String = "") As String
-        'GetGFEOption = Registry.GetString(HKEY_CURRENT_USER, "SOFTWARE\GFE\" & OptionPath, OptionName, DefaultValue)
-        Return CType(My.Computer.Registry.GetValue _
-            ("HKEY_CURRENT_USER\SOFTWARE\GFE\" & OptionPath, OptionName, DefaultValue), String)
-
+        'Note: данный код является workaraund, т.к. DefaultValue не возвращается в класссе
+        Dim ret As Object = My.Computer.Registry.GetValue _
+                ("HKEY_CURRENT_USER\SOFTWARE\GFE\" & OptionPath, OptionName, DefaultValue)
+        If IsNothing(ret) Then
+            Return DefaultValue
+        Else
+            Return CStr(ret)
+        End If
     End Function
 
     ''' <summary>

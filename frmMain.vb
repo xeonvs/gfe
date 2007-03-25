@@ -60,8 +60,8 @@ Public Class frmMain
         MainMenu.Left = CInt(GetGFEOption("Screen\Main", "MainMenu_Left", "0"))
 
         'сплитеры
-        SplitContainer1.SplitterDistance = CInt(GetGFEOption("Screen\Main", "SplitContainer1", "210"))
-        SplitContainer2.SplitterDistance = CInt(GetGFEOption("Screen\Main", "SplitContainer2", "165"))
+        SplitContainer1.SplitterDistance = CInt(GetGFEOption("Screen\Main", "SplitContainer1", "200"))
+        SplitContainer2.SplitterDistance = CInt(GetGFEOption("Screen\Main", "SplitContainer2", "100"))
 
         'списки писем и эх
         For i As Integer = 0 To MailList.Columns.Count - 1

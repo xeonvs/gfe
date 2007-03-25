@@ -152,8 +152,8 @@ Partial Public Class frmMain
         'SplitContainer1.Panel2
         '
         Me.SplitContainer1.Panel2.Controls.Add(Me.SplitContainer2)
-        Me.SplitContainer1.Size = New System.Drawing.Size(762, 430)
-        Me.SplitContainer1.SplitterDistance = 202
+        Me.SplitContainer1.Size = New System.Drawing.Size(632, 347)
+        Me.SplitContainer1.SplitterDistance = 167
         Me.SplitContainer1.TabIndex = 5
         Me.SplitContainer1.Text = "SplitContainer1"
         '
@@ -167,7 +167,7 @@ Partial Public Class frmMain
         Me.EchoList.Location = New System.Drawing.Point(0, 0)
         Me.EchoList.MultiSelect = False
         Me.EchoList.Name = "EchoList"
-        Me.EchoList.Size = New System.Drawing.Size(202, 430)
+        Me.EchoList.Size = New System.Drawing.Size(167, 347)
         Me.EchoList.SmallImageList = Me.ImagesEchoList
         Me.EchoList.TabIndex = 0
         Me.EchoList.UseCompatibleStateImageBehavior = False
@@ -213,8 +213,8 @@ Partial Public Class frmMain
         '
         Me.SplitContainer2.Panel2.Controls.Add(Me.HtmlMailViewer)
         Me.SplitContainer2.Panel2.Controls.Add(Me.MailHead)
-        Me.SplitContainer2.Size = New System.Drawing.Size(556, 430)
-        Me.SplitContainer2.SplitterDistance = 157
+        Me.SplitContainer2.Size = New System.Drawing.Size(461, 347)
+        Me.SplitContainer2.SplitterDistance = 126
         Me.SplitContainer2.TabIndex = 6
         Me.SplitContainer2.Text = "SplitContainer2"
         '
@@ -229,7 +229,7 @@ Partial Public Class frmMain
         Me.MailList.Location = New System.Drawing.Point(0, 0)
         Me.MailList.Name = "MailList"
         Me.MailList.ShowGroups = False
-        Me.MailList.Size = New System.Drawing.Size(556, 157)
+        Me.MailList.Size = New System.Drawing.Size(461, 126)
         Me.MailList.TabIndex = 1
         Me.MailList.UseCompatibleStateImageBehavior = False
         Me.MailList.View = System.Windows.Forms.View.Details
@@ -359,7 +359,7 @@ Partial Public Class frmMain
         Me.HtmlMailViewer.Location = New System.Drawing.Point(0, 64)
         Me.HtmlMailViewer.MinimumSize = New System.Drawing.Size(20, 20)
         Me.HtmlMailViewer.Name = "HtmlMailViewer"
-        Me.HtmlMailViewer.Size = New System.Drawing.Size(560, 201)
+        Me.HtmlMailViewer.Size = New System.Drawing.Size(465, 149)
         Me.HtmlMailViewer.TabIndex = 8
         Me.HtmlMailViewer.Url = New System.Uri("about:blank", System.UriKind.Absolute)
         '
@@ -372,7 +372,7 @@ Partial Public Class frmMain
         Me.MailHead.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(204, Byte))
         Me.MailHead.Location = New System.Drawing.Point(0, 0)
         Me.MailHead.Name = "MailHead"
-        Me.MailHead.Size = New System.Drawing.Size(556, 64)
+        Me.MailHead.Size = New System.Drawing.Size(461, 64)
         Me.MailHead.TabIndex = 7
         Me.MailHead.TabStop = False
         Me.MailHead.Text = "Письма Отсутствуют"
@@ -383,7 +383,7 @@ Partial Public Class frmMain
         Me.lblFromAddr.AutoSize = True
         Me.lblFromAddr.FlatStyle = System.Windows.Forms.FlatStyle.System
         Me.lblFromAddr.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(204, Byte))
-        Me.lblFromAddr.Location = New System.Drawing.Point(237, 16)
+        Me.lblFromAddr.Location = New System.Drawing.Point(189, 16)
         Me.lblFromAddr.Name = "lblFromAddr"
         Me.lblFromAddr.Size = New System.Drawing.Size(47, 13)
         Me.lblFromAddr.TabIndex = 9
@@ -409,7 +409,7 @@ Partial Public Class frmMain
         Me.lblFrom.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(204, Byte))
         Me.lblFrom.Location = New System.Drawing.Point(8, 16)
         Me.lblFrom.Name = "lblFrom"
-        Me.lblFrom.Size = New System.Drawing.Size(218, 16)
+        Me.lblFrom.Size = New System.Drawing.Size(123, 16)
         Me.lblFrom.TabIndex = 8
         Me.lblFrom.Text = "От Кого:"
         '
@@ -635,13 +635,13 @@ Partial Public Class frmMain
         '
         Me.ToolStripContainer1.ContentPanel.AutoScroll = True
         Me.ToolStripContainer1.ContentPanel.Controls.Add(Me.SplitContainer1)
-        Me.ToolStripContainer1.ContentPanel.Size = New System.Drawing.Size(762, 430)
+        Me.ToolStripContainer1.ContentPanel.Size = New System.Drawing.Size(632, 347)
         Me.ToolStripContainer1.Dock = System.Windows.Forms.DockStyle.Fill
         Me.ToolStripContainer1.LeftToolStripPanelVisible = False
         Me.ToolStripContainer1.Location = New System.Drawing.Point(0, 0)
         Me.ToolStripContainer1.Name = "ToolStripContainer1"
         Me.ToolStripContainer1.RightToolStripPanelVisible = False
-        Me.ToolStripContainer1.Size = New System.Drawing.Size(762, 529)
+        Me.ToolStripContainer1.Size = New System.Drawing.Size(632, 446)
         Me.ToolStripContainer1.TabIndex = 7
         Me.ToolStripContainer1.Text = "ToolStripContainer1"
         '
@@ -657,7 +657,7 @@ Partial Public Class frmMain
         Me.StatusStrip.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripStatusLabelEchos, Me.ToolStripProgressBar})
         Me.StatusStrip.Location = New System.Drawing.Point(0, 0)
         Me.StatusStrip.Name = "StatusStrip"
-        Me.StatusStrip.Size = New System.Drawing.Size(762, 25)
+        Me.StatusStrip.Size = New System.Drawing.Size(632, 25)
         Me.StatusStrip.TabIndex = 0
         Me.StatusStrip.Text = "StatusStrip"
         '
@@ -940,7 +940,7 @@ Partial Public Class frmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(762, 529)
+        Me.ClientSize = New System.Drawing.Size(632, 446)
         Me.Controls.Add(Me.ToolStripContainer1)
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.Name = "frmMain"
