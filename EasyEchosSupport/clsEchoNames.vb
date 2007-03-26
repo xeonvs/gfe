@@ -226,9 +226,9 @@ Public Class clsEchoNames
     ''' Возвращает кол-во эх
     ''' </summary>
     ''' <remarks>Зачем тут строка не помню :(</remarks>
-    Public ReadOnly Property EchosCount() As String
+    Public ReadOnly Property EchosCount() As Integer
         Get
-            Return EchoRefsCount.ToString
+            Return EchoRefsCount
         End Get
     End Property
     ''' <summary>

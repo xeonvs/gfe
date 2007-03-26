@@ -32,9 +32,9 @@ Partial Public Class frmStart
         Me.picModules.Dock = System.Windows.Forms.DockStyle.Bottom
         Me.picModules.ErrorImage = Nothing
         Me.picModules.InitialImage = Nothing
-        Me.picModules.Location = New System.Drawing.Point(0, 206)
+        Me.picModules.Location = New System.Drawing.Point(0, 205)
         Me.picModules.Name = "picModules"
-        Me.picModules.Size = New System.Drawing.Size(540, 80)
+        Me.picModules.Size = New System.Drawing.Size(540, 100)
         Me.picModules.TabIndex = 0
         Me.picModules.TabStop = False
         '
@@ -56,12 +56,10 @@ Partial Public Class frmStart
         '
         'frmStart
         '
-        Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
-        Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.SystemColors.AppWorkspace
-        Me.BackgroundImage = Gfe.My.Resources.Resources.About
+        Me.BackgroundImage = Global.Gfe.My.Resources.Resources.About
         Me.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None
-        Me.ClientSize = New System.Drawing.Size(540, 286)
+        Me.ClientSize = New System.Drawing.Size(540, 305)
         Me.ControlBox = False
         Me.Controls.Add(Me.picEchoName)
         Me.Controls.Add(Me.picModules)

@@ -12,7 +12,7 @@ Public Class frmStart
     Private Const moduleItemWidth As Integer = 48
     Private Const moduleTopShift As Integer = 8
     Private Const moduleBottomShift As Integer = 8
-    Private Const moduleItemHeight As Integer = 80 - moduleTopShift - moduleBottomShift
+    Private Const moduleItemHeight As Integer = 100 - moduleTopShift - moduleBottomShift
     Private Const moduleInterval As Integer = 8
     Private msg As String
 
