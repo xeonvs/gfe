@@ -1,4 +1,5 @@
 Option Explicit On
+Option Strict Off
 
 ''' <summary>
 ''' Главная форма
@@ -34,7 +35,7 @@ Public Class frmMain
         If Me.WindowState <> FormWindowState.Maximized Then
             Me.Width = CInt(GetGFEOption("Screen\Main", "Width", CStr(Me.Width * 15))) / 15
             Me.Height = CInt(GetGFEOption("Screen\Main", "Height", CStr(Me.Height * 15))) / 15
-            Select Case CInt(GetGFEOption("Screen\Main", "WindowState", Me.WindowState))
+            Select Case CInt(GetGFEOption("Screen\Main", "WindowState", Me.WindowState.ToString))
                 Case FormWindowState.Minimized
                     Me.WindowState = FormWindowState.Minimized
 
@@ -106,10 +107,10 @@ Public Class frmMain
             If LCase(GetGFEOption("Options", "NetmailPosition", "Bottom")) = "top" Then
                 netmC = 0
                 While Len(GetGFEOption("Options", "Netmail Dir" & netmC)) <> 0
-                    cdb = Activator.CreateInstance(Bases.Item(IDatabases.enmBaseType.Fido))
+                    cdb = CType(Activator.CreateInstance(Bases.Item(IDatabases.enmBaseType.Fido)), IDatabases)
                     LI = New ListViewItem(GetGFEOption("Options", "Netmail Name" & netmC, "Netmail" & netmC), 0)
                     LI.Tag = GetGFEOption("Options", "Netmail Dir" & netmC, "C:\T-Mail\Mail")
-                    LI.SubItems.Add(CStr(cdb.MessageCountByEcho((LI.Tag))))
+                    LI.SubItems.Add(CStr(cdb.MessageCountByEcho((LI.Tag.ToString))))
                     LI.SubItems.Add("Netmail Area")
                     LI.ToolTipText = "Netmail Area"
                     LI.SubItems.Add(GetGFEOption("Options", "MainAddress"))
@@ -156,7 +157,7 @@ Public Class frmMain
 
                     'подключаем базу требуемого типа и получаем список мессаг
                     Try
-                        cdb = Activator.CreateInstance(Bases.Item(clsEchos.GetEchoTypeByNum(ECNum)))
+                        cdb = CType(Activator.CreateInstance(Bases.Item(clsEchos.GetEchoTypeByNum(ECNum))), IDatabases)
                     Catch ex As KeyNotFoundException
                         MsgBox("Выбранный тип (" & clsEchos.GetEchoTypeByNum(ECNum).ToString & ") базы не поддерживается или ошибка загрузки модуля базы.", MsgBoxStyle.Critical)
                         Exit For
@@ -207,18 +208,18 @@ Public Class frmMain
             If LCase(GetGFEOption("Options", "NetmailPosition", "Bottom")) = "bottom" Then
                 netmC = 0
                 While Len(GetGFEOption("Options", "Netmail Dir" & netmC)) <> 0
-                    cdb = Activator.CreateInstance(Bases.Item(IDatabases.enmBaseType.Fido))
+                    cdb = CType(Activator.CreateInstance(Bases.Item(IDatabases.enmBaseType.Fido)), IDatabases)
                     LI = New ListViewItem(GetGFEOption("Options", "Netmail Name" & netmC, "Netmail" & netmC), 0)
                     LI.Tag = GetGFEOption("Options", "Netmail Dir" & netmC, "C:\T-Mail\Mail")
-                    LI.SubItems.Add(CStr(cdb.MessageCountByEcho((LI.Tag))))
+                    LI.SubItems.Add(CStr(cdb.MessageCountByEcho((LI.Tag.ToString))))
                     LI.SubItems.Add("Netmail Area")
                     LI.ToolTipText = "Netmail Area"
                     LI.SubItems.Add(GetGFEOption("Options", "MainAddress"))
                     LI.SubItems.Add("1").Name = "ecType"
 
-                    sum = sum + CDbl(LI.SubItems(1).Text)
+                    sum += CDbl(LI.SubItems(1).Text)
 
-                    netmC = netmC + 1
+                    netmC += 1
 
                     'проверяем есть ли новые письма и если есть выделяем их жирным шрифтом
                     optC = CInt(GetGFEOption("LastRead\Echos", (LI.Text), LI.SubItems(1).Text))
@@ -226,7 +227,7 @@ Public Class frmMain
                     If optC < CDbl(LI.SubItems(1).Text) Then
                         'добавились
                         LI.Font = New Font(LI.Font, LI.Font.Style Or FontStyle.Bold)
-                        sumnew = sumnew + (CDbl(LI.SubItems(1).Text) - optC)
+                        sumnew += (CDbl(LI.SubItems(1).Text) - optC)
                     Else
                         'удалились
                     End If
@@ -343,7 +344,7 @@ Public Class frmMain
         frmMlEd.EditorMode = ReplayMode.ViewMails
 
         If frmMlEd.CurrentEcho.BaseType = IDatabasesTypes.enmBaseType.Fido Then
-            frmMlEd.CurrentEcho.DBName = EchoList.SelectedItems.Item(0).Tag
+            frmMlEd.CurrentEcho.DBName = EchoList.SelectedItems.Item(0).Tag.ToString
         Else
             frmMlEd.CurrentEcho.DBName = clsEchos.GetEchoFileByNum(clsEchos.GetEchoNumByName(EchoList.SelectedItems.Item(0).Text))
         End If
@@ -385,7 +386,7 @@ Public Class frmMain
         ' А нужен ли тут код проверки на одновременное написание нескольких писем в одну эху?
         ' технически проблем с написанием не должно быть, если в методе сохранения письма обновлять информацию о эхе.
         For Each frm In Application.OpenForms
-            If frm.Tag = EchoList.SelectedItems.Item(0).Text Then
+            If frm.Tag.ToString = EchoList.SelectedItems.Item(0).Text Then
                 flg = True
                 Exit For
             End If
@@ -399,7 +400,7 @@ Public Class frmMain
             frmMlEd.EditorMode = ReplayMode.NewMail
 
             If frmMlEd.CurrentEcho.BaseType = IDatabasesTypes.enmBaseType.Fido Then
-                frmMlEd.CurrentEcho.DBName = EchoList.SelectedItems.Item(0).Tag
+                frmMlEd.CurrentEcho.DBName = EchoList.SelectedItems.Item(0).Tag.ToString
             Else
                 frmMlEd.CurrentEcho.DBName = clsEchos.GetEchoFileByNum(clsEchos.GetEchoNumByName(EchoList.SelectedItems.Item(0).Text))
             End If
@@ -520,8 +521,8 @@ Public Class frmMain
         curEcho = GetEchoInterface(EchoList.SelectedItems.Item(0).Text)
         ' проверка на Netmail
         If curEcho.BaseType = IDatabasesTypes.enmBaseType.Fido Then
-            curEcho.DBName = EchoList.SelectedItems.Item(0).Tag
-            MailList.VirtualListSize = curEcho.MessageCountByEcho(EchoList.SelectedItems.Item(0).Tag)
+            curEcho.DBName = EchoList.SelectedItems.Item(0).Tag.ToString
+            MailList.VirtualListSize = curEcho.MessageCountByEcho(EchoList.SelectedItems.Item(0).Tag.ToString)
 
         Else
             Dim ecNum As Integer = clsEchos.GetEchoNumByName(EchoList.SelectedItems.Item(0).Text)
@@ -555,9 +556,9 @@ Public Class frmMain
 
         ' проверка на Netmail
         If ecNum = -1 Then
-            Return Activator.CreateInstance(Bases.Item(IDatabasesTypes.enmBaseType.Fido))
+            Return CType(Activator.CreateInstance(Bases.Item(IDatabasesTypes.enmBaseType.Fido)), IDatabases)
         Else
-            Return Activator.CreateInstance(Bases.Item(clsEchos.GetEchoTypeByNum(ecNum)))
+            Return CType(Activator.CreateInstance(Bases.Item(clsEchos.GetEchoTypeByNum(ecNum))), IDatabases)
         End If
 
     End Function

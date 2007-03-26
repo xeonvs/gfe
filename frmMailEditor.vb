@@ -1,3 +1,6 @@
+Option Explicit On
+Option Strict Off
+
 Imports System.Data
 
 ''' <summary>
@@ -56,10 +59,10 @@ Public Class frmMailEditor
 
         Select Case Me.EditorMode
             Case ReplayMode.NewMail
-                Me.Text = Me.Tag & "::New Mail"
+                Me.Text = Me.Tag.ToString & "::New Mail"
 
             Case ReplayMode.ViewMails
-                Me.Text = Me.Tag & "::View Mail"
+                Me.Text = Me.Tag.ToString & "::View Mail"
                 Me.DisplayMessage()
 
             Case Else
@@ -71,7 +74,7 @@ Public Class frmMailEditor
     ''' Нажатие кнопки с смайликом
     ''' </summary> 
     Public Sub Smiles_Click(ByVal sender As Object, ByVal e As System.EventArgs)
-        rtfMessage.SelectedText = " " & sender.Tag
+        rtfMessage.SelectedText = " " & sender.Tag.ToString
     End Sub
 
     ''' <summary>
@@ -85,7 +88,7 @@ Public Class frmMailEditor
 
             tlbBtn.Name = "Smile" & dsSmiles.Tables(0).Rows(i).Item("Id").ToString
             tlbBtn.Tag = dsSmiles.Tables(0).Rows(i).Item("Smile").ToString
-            tlbBtn.ToolTipText = tlbBtn.Tag
+            tlbBtn.ToolTipText = tlbBtn.Tag.ToString
             tlbBtn.AutoSize = True
             tlbBtn.ImageAlign = ContentAlignment.MiddleCenter
             tlbBtn.ImageScaling = ToolStripItemImageScaling.None
