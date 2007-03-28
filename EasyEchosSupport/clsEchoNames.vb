@@ -94,7 +94,6 @@ Public Class clsEchoNames
     End Structure
 
     '~~~~~~~~~~~~~~~
-
     Private Structure EchoRefType
         Dim EName As String         'Имя эхи
         Dim EFile As String         'Путь до базы и имя файла базы
@@ -122,7 +121,7 @@ Public Class clsEchoNames
         ReDim TossersNames(6)
         TossersNames(0) = "Areas.bbs"
         TossersNames(1) = "FastEcho 1.46.1"
-        TossersNames(2) = "HPT 1.4"
+        TossersNames(2) = "HPT 1.x"
         TossersNames(3) = "BBToss 2.50"
         TossersNames(4) = "FIPS"
         TossersNames(5) = "squish.cfg"
@@ -1038,18 +1037,26 @@ errHandler:
             Case 10 'SQL
                 Try
                     Dim connStr As String = Replace(cIni.Value("Paths", "Msgbase"), "|", ";")
-                    Dim sqlConn As New Npgsql.NpgsqlConnection(connStr)
-                    Dim Command As New Npgsql.NpgsqlCommand("SELECT * FROM ""Areas"";", sqlConn)
-                    sqlConn.Open()
-                    Dim dr As Npgsql.NpgsqlDataReader = Command.ExecuteReader()
+                    Dim sqlConn, Command, dr As Object
 
+                    If InStr(connStr, "Server=", CompareMethod.Text) <> 0 Then
+                        sqlConn = New Npgsql.NpgsqlConnection(connStr)
+                        Command = New Npgsql.NpgsqlCommand("SELECT * FROM ""Areas"";", sqlConn)
+                    ElseIf InStr(connStr, "data source=", CompareMethod.Text) <> 0 Then
+                        sqlConn = New SqlClient.SqlConnection(connStr)
+                        Command = New SqlClient.SqlCommand("SELECT * FROM Areas;", sqlConn)
+                    End If
+
+                    sqlConn.Open()
+
+                    dr = Command.ExecuteReader()
                     While dr.Read()
                         With ec
                             .EName = dr("AreaName").ToString
-                            .EFile = sqlConn.ConnectionString
+                            .EFile = connStr
                             .AkA = dr("AKA").ToString.Replace(vbLf, "")
                             .Description = dr("Description").ToString
-                            .EchoType = IDatabasesTypes.enmBaseType.SQL                            
+                            .EchoType = IDatabasesTypes.enmBaseType.SQL
                         End With
 
                         AddEchoToList(ec) 'добавляем в лист

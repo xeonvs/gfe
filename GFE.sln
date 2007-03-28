@@ -27,6 +27,8 @@ Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "fipsBase", "fipsBase\fipsBa
 EndProject
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "pgsqlBase", "sqlBase\pgsqlBase.vbproj", "{1A0FA531-37BA-4ED4-948A-3143125E2FAA}"
 EndProject
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "mssqlBase", "mssqlBase\mssqlBase.vbproj", "{B134EA17-CC0E-436A-9577-93F7B7520829}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,10 @@ Global
 		{1A0FA531-37BA-4ED4-948A-3143125E2FAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1A0FA531-37BA-4ED4-948A-3143125E2FAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1A0FA531-37BA-4ED4-948A-3143125E2FAA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B134EA17-CC0E-436A-9577-93F7B7520829}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B134EA17-CC0E-436A-9577-93F7B7520829}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B134EA17-CC0E-436A-9577-93F7B7520829}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B134EA17-CC0E-436A-9577-93F7B7520829}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -79,5 +85,6 @@ Global
 		{35F0A095-6FAC-4AA8-B278-859307D4E8B6} = {03C7B906-2701-4CDD-B0EA-B1261B8EFB69}
 		{7B1B5A8A-B8E5-4DBF-A133-A97C49DEED94} = {03C7B906-2701-4CDD-B0EA-B1261B8EFB69}
 		{1A0FA531-37BA-4ED4-948A-3143125E2FAA} = {03C7B906-2701-4CDD-B0EA-B1261B8EFB69}
+		{B134EA17-CC0E-436A-9577-93F7B7520829} = {03C7B906-2701-4CDD-B0EA-B1261B8EFB69}
 	EndGlobalSection
 EndGlobal

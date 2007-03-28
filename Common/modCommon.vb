@@ -63,7 +63,11 @@ Module modCommon
                             End If
                         Next
                         If dbtype <> IDatabasesTypes.enmBaseType.Unknown And t.IsPublic = True Then
-                            Bases.Add(dbtype, t)
+                            Try
+                                Bases.Add(dbtype, t)
+                            Catch ex As ArgumentException
+                                'попытка подключить еще один модуль такого-же типа.
+                            End Try
                         Else
                             'errroooorrrr
                         End If
