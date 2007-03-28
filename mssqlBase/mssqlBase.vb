@@ -28,14 +28,14 @@ Public Class Database
     Private unixtime As Date = DateTime.Parse("01.01.1970 00:00:00")
 
 #Region "Operators and params"
-    Dim msgCount As New NpgsqlCommand("""GetMessageCount""(:echo);")
-    Dim hdrCommand As New NpgsqlCommand("""GetMessageHeaders""(:echo,:msg);")
-    Dim msgCommand As New NpgsqlCommand("""GetMessage""(:echo,:msg);")
-    Dim echoNameParam As New NpgsqlParameter("echo", DbType.String)
-    Dim msgNumParam As New NpgsqlParameter("msg", DbType.Int32)
-
-    Dim lrGetCommand As New NpgsqlCommand("SELECT  ""LastreadMsgId"" From ""Areas"" WHERE ""AreaName""=':echo';")
-    Dim lrSetCommand As New NpgsqlCommand("UPDATE ""Areas"" SET ""LastreadMsgId""=:msg WHERE ""AreaName""=':echo';")
+    Dim msgCount As New SqlCommand("dbo.[GetMessageCount]")
+    Dim hdrCommand As New SqlCommand("GetMessageHeaders")
+    Dim msgCommand As New SqlCommand("GetMessage")
+    Dim echoNameParam As New SqlParameter("@echo", DbType.String)
+    Dim msgNumParam As New SqlParameter("@msgnum", DbType.Int32)
+    
+    Dim lrGetCommand As New SqlCommand("SELECT LastreadMsgId From Areas WHERE AreaName LIKE @echo")
+    Dim lrSetCommand As New SqlCommand("UPDATE Areas SET LastreadMsgId = @msgnum  WHERE AreaName LIKE @echo")
 
 #End Region
 
@@ -132,8 +132,8 @@ Public Class Database
             Exit Sub
         End If
 
-        If sqlConn.State = ConnectionState.Closed Then
-            sqlConn.Open()            
+        If sqlConn.State Then
+            sqlConn.Open()
         End If
 
         If hdrCommand.Parameters.Count = 0 Then
@@ -142,7 +142,7 @@ Public Class Database
             hdrCommand.Parameters.Add(msgNumParam)
         End If
 
-        Dim dr As NpgsqlDataReader
+        Dim dr As SqlDataReader
         hdrCommand.Connection = sqlConn        
         hdrCommand.Parameters(0).Value = strEchoName
         hdrCommand.Parameters(1).Value = NumberMessage
@@ -241,7 +241,7 @@ Public Class Database
             msgCommand.Parameters.Add(msgNumParam)
         End If
 
-        Dim dr As NpgsqlDataReader
+        Dim dr As SqlDataReader
         msgCommand.Connection = sqlConn
         msgCommand.Parameters(0).Value = strEchoName
         msgCommand.Parameters(1).Value = NumberMessage
@@ -277,7 +277,7 @@ Public Class Database
     Public ReadOnly Property MessageCountByEcho(ByVal EchoPath As String) As Integer Implements IDatabases.MessageCountByEcho
         Get           
             If IsNothing(sqlConn) Then
-                sqlConn = New NpgsqlConnection(EchoPath)
+                sqlConn = New SqlConnection(EchoPath)
             End If
 
             If sqlConn.State = ConnectionState.Closed Then
@@ -286,11 +286,13 @@ Public Class Database
 
             Try
                 If msgCount.Parameters.Count = 0 Then
-                    msgCount.Parameters.Add(echoNameParam)
+                    msgCount.Parameters.Add(echoNameParam)                    
                 End If
+
                 msgCount.Parameters(0).Value = strEchoName
                 msgCount.Connection = sqlConn
                 msgCount.CommandType = CommandType.StoredProcedure
+                Dim ret As Integer = CInt(msgCount.ExecuteScalar())
                 Return CInt(msgCount.ExecuteScalar())
             Catch ex As Exception
                 '
@@ -322,10 +324,11 @@ Public Class Database
 
     Public Sub OpenDB() Implements IDatabases.OpenDB
         Try
-            sqlConn = New NpgsqlConnection(strDBname)
+            sqlConn = New SqlConnection(strDBname)
             sqlConn.Open()
-            Dim cmd As New NpgsqlCommand("SHOW SERVER_ENCODING;", sqlConn)
-            serverCodePage = CInt(CStr(cmd.ExecuteScalar()).Replace("WIN", ""))
+            'Dim cmd As New SqlCommand("SHOW SERVER_ENCODING;", sqlConn)
+            'serverCodePage = CInt(CStr(cmd.ExecuteScalar()).Replace("WIN", ""))
+            serverCodePage = 1251
         Catch ex As Exception
 
         End Try

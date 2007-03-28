@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{1A0FA531-37BA-4ED4-948A-3143125E2FAA}</ProjectGuid>
+    <ProjectGuid>{B134EA17-CC0E-436A-9577-93F7B7520829}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>mssqlBase</RootNamespace>
     <AssemblyName>mssqlBase</AssemblyName>
@@ -32,7 +32,6 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Data.SqlClient, Version=3.0.3600.0, Culture=neutral, PublicKeyToken=3be235df1c8d2ad3, processorArchitecture=MSIL" />
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
