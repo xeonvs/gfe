@@ -28,11 +28,11 @@ Public Class Database
     Private unixtime As Date = DateTime.Parse("01.01.1970 00:00:00")
 
 #Region "Operators and params"
-    Dim msgCount As New SqlCommand("dbo.[GetMessageCount]")
+    Dim msgCount As New SqlCommand("SELECT [dbo].[GetMessageCount](@echo)")
     Dim hdrCommand As New SqlCommand("GetMessageHeaders")
     Dim msgCommand As New SqlCommand("GetMessage")
-    Dim echoNameParam As New SqlParameter("@echo", DbType.String)
-    Dim msgNumParam As New SqlParameter("@msgnum", DbType.Int32)
+    Dim echoNameParam As New SqlParameter("@echo", SqlDbType.Text)
+    Dim msgNumParam As New SqlParameter("@msgnum", DbType.Int64)
     
     Dim lrGetCommand As New SqlCommand("SELECT LastreadMsgId From Areas WHERE AreaName LIKE @echo")
     Dim lrSetCommand As New SqlCommand("UPDATE Areas SET LastreadMsgId = @msgnum  WHERE AreaName LIKE @echo")
@@ -132,14 +132,14 @@ Public Class Database
             Exit Sub
         End If
 
-        If sqlConn.State Then
+        If sqlConn.State = ConnectionState.Closed Then
             sqlConn.Open()
         End If
 
         If hdrCommand.Parameters.Count = 0 Then
             hdrCommand.CommandType = CommandType.StoredProcedure
-            hdrCommand.Parameters.Add(echoNameParam)
-            hdrCommand.Parameters.Add(msgNumParam)
+            hdrCommand.Parameters.Add(New SqlParameter("@echo", SqlDbType.Text))
+            hdrCommand.Parameters.Add(New SqlParameter("@msgnum", DbType.Int64))
         End If
 
         Dim dr As SqlDataReader
@@ -148,7 +148,8 @@ Public Class Database
         hdrCommand.Parameters(1).Value = NumberMessage
         dr = hdrCommand.ExecuteReader
         dr.Read()
-            'dr("column_name") - весьма медленный метод
+
+        'dr("column_name") - весьма медленный метод
         'исспользование в циклах dr.GetOrdinal("column_name") значительно эффективнее
         msgFrom = dr("fromname")
         msgFromAddr = dr("fromaddr")
@@ -162,7 +163,10 @@ Public Class Database
         msgDateArrived = DateTime.Parse(dr("msgdate")).Subtract(unixtime).TotalSeconds
         msgDateWritten = msgDateArrived
         msgFlags = dr("attr")
-        msgReplayTo = dr("replayid")
+        'msgReplayTo = dr("replayid")
+        msgReplayTo = dr(9)
+
+        dr.Close()
 
     End Sub
 
@@ -237,8 +241,8 @@ Public Class Database
 
         If msgCommand.Parameters.Count = 0 Then
             msgCommand.CommandType = CommandType.StoredProcedure
-            msgCommand.Parameters.Add(echoNameParam)
-            msgCommand.Parameters.Add(msgNumParam)
+            msgCommand.Parameters.Add(New SqlParameter("@echo", SqlDbType.Text))
+            msgCommand.Parameters.Add(New SqlParameter("@msgnum", DbType.Int64))
         End If
 
         Dim dr As SqlDataReader
@@ -254,6 +258,8 @@ Public Class Database
         Else
             msgText = dr("messagetext")
         End If
+
+        dr.Close()
 
     End Sub
 
@@ -291,8 +297,7 @@ Public Class Database
 
                 msgCount.Parameters(0).Value = strEchoName
                 msgCount.Connection = sqlConn
-                msgCount.CommandType = CommandType.StoredProcedure
-                Dim ret As Integer = CInt(msgCount.ExecuteScalar())
+                msgCount.CommandType = CommandType.Text
                 Return CInt(msgCount.ExecuteScalar())
             Catch ex As Exception
                 '
