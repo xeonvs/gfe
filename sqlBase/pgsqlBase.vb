@@ -164,6 +164,8 @@ Public Class Database
         msgFlags = dr("attr")
         msgReplayTo = dr("replayid")
 
+        dr.Close()
+
     End Sub
 
     Public Sub GetHeadesByNumAll(ByVal NumberMessage As Integer) Implements IDatabases.GetHeadesByNumAll
@@ -254,6 +256,8 @@ Public Class Database
         Else
             msgText = dr("messagetext")
         End If
+
+        dr.Close()
 
     End Sub
 
