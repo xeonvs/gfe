@@ -55,6 +55,8 @@ Public Class Database
     Private brT As BinaryReader 'Read texts
     Private wrH As BinaryWriter 'Write headers
     Private wrT As BinaryWriter 'Write texts
+    Private fsI As FileStream   'Index
+    Private brI As BinaryReader 'Index reader
     Private ffsT As String      'filename for texts
     Private ffsL As String      'filename for lastread
     Private ffsI As String      'filename for index
@@ -486,7 +488,7 @@ Public Class Database
             brH = New BinaryReader(fsH)
             wrH = New BinaryWriter(fsH)
         Catch e As System.IO.FileNotFoundException
-            MsgBox("Файл: " & strDBname & " не найден.")
+            MsgBox("Файл заголовков: " & strDBname & " не найден.")
             Exit Sub
         Catch
             Exit Sub
@@ -497,12 +499,21 @@ Public Class Database
             brT = New BinaryReader(fsT)
             wrT = New BinaryWriter(fsT)
         Catch e As System.IO.FileNotFoundException
-            MsgBox("Файл: " & ffsT & " не найден.")
+            MsgBox("Файл текстов: " & ffsT & " не найден.")
             Exit Sub
         Catch
             Exit Sub
         End Try
 
+        Try
+            fsI = New FileStream(ffsI, FileMode.Open)
+            brI = New BinaryReader(fsI)
+        Catch e As System.IO.FileNotFoundException
+            MsgBox("Файл индексов: " & ffsT & " не найден.")
+            Exit Sub
+        Catch
+            Exit Sub
+        End Try
     End Sub
 
     Public Property ReplayFirst() As Integer Implements GfeCore.IDatabases.ReplayFirst
@@ -616,8 +627,6 @@ Public Class Database
     ''' </summary>
     Private Function GetMessageOffsetFromIndex(ByVal NumberMessage As Integer) As Integer
         Try
-            Dim fsI As New FileStream(ffsI, FileMode.Open)
-            Dim brI As New BinaryReader(fsI)
             Dim idx As Integer = NumberMessage * 8 + 4 '+4 в данном случае первая запись структуры
             Dim offset As Integer = -1
 
@@ -631,8 +640,6 @@ Public Class Database
                 'сделать реверсивный поиск.
             End Try
 
-            fsI.Close()
-            fsI = Nothing
             Return offset
 
         Catch ex As IOException
@@ -686,6 +693,8 @@ Public Class Database
                         brT.Close()
                         fsT.Close()
                         fsH.Close()
+                        brI.Close()
+                        fsI.Close()
                     End If
                 Catch
                 Finally
@@ -695,6 +704,8 @@ Public Class Database
                     wrT = Nothing
                     fsH = Nothing
                     fsT = Nothing
+                    brI = Nothing
+                    fsI = Nothing
                     MyBase.Finalize()
                 End Try
             End If
