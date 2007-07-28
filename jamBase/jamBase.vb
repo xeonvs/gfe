@@ -7,28 +7,6 @@ Imports System.Text
 Public Class Database
     Implements IDatabases
 
-#Region "API"
-    'Private Declare Sub RtlMoveMemory Lib "kernel32.dll" (ByRef dst As Any, ByRef Src As Any, ByVal cb As Integer)
-    Private Declare Function CreateFile Lib "kernel32" Alias "CreateFileA" (ByVal lpFileName As String, ByVal dwDesiredAccess As Integer, ByVal dwShareMode As Integer, ByVal lpSecurityAttributes As Integer, ByVal dwCreationDisposition As Integer, ByVal dwFlagsAndAttributes As Integer, ByVal hTemplateFile As Integer) As Integer
-    Private Declare Function ReadFile Lib "kernel32" (ByVal hFile As Integer, ByRef lpBuffer As Integer, ByVal nNumberOfBytesToRead As Integer, ByRef lpNumberOfBytesRead As Integer, ByVal lpOverlapped As Integer) As Integer
-    Private Declare Function SetFilePointer Lib "kernel32" (ByVal hFile As Integer, ByVal lDistanceToMove As Integer, ByRef lpDistanceToMoveHigh As Integer, ByVal dwMoveMethod As Integer) As Integer
-    Private Declare Function GetFileSize Lib "kernel32" (ByVal hFile As Integer, ByRef lpFileSizeHigh As Integer) As Integer
-    Private Declare Function CloseHandle Lib "kernel32" (ByVal hObject As Integer) As Integer
-
-    Private Const GENERIC_ALL As Integer = &H10000000
-    Private Const GENERIC_EXECUTE As Integer = &H20000000
-    Private Const GENERIC_READ As Integer = &H80000000
-    Private Const GENERIC_WRITE As Integer = &H40000000
-    Private Const FILE_SHARE_READ As Short = &H1S
-    Private Const FILE_SHARE_WRITE As Short = &H2S
-    Private Const CREATE_ALWAYS As Short = 2
-    Private Const CREATE_NEW As Short = 1
-    Private Const OPEN_EXISTING As Short = 3
-    Private Const FILE_BEGIN As Short = 0
-    Private Const FILE_END As Short = 2
-    Private Const FILE_CURRENT As Short = 1
-#End Region
-
 #Region "Private members"
     '~~~~~~~~~~~~~~~~~~~~~переменные для свойств
     Private strDBname As String 'local copy
@@ -391,11 +369,9 @@ Public Class Database
     Public Function GetMessageDumpByNum(ByVal NumberMessage As Integer) As String Implements GfeCore.IDatabases.GetMessageDumpByNum
         Return ""
     End Function
-
     Public Function GetMessageKlugeByNum(ByVal NumberMessage As Integer) As String Implements GfeCore.IDatabases.GetMessageKlugeByNum
         Return ""
     End Function
-
     Public Property MessageCount() As Integer Implements GfeCore.IDatabases.MessageCount
         Get
             Return numMessages
@@ -404,52 +380,37 @@ Public Class Database
             numMessages = value
         End Set
     End Property
-
     Public ReadOnly Property MessageCountByEcho(ByVal EchoPath As String) As Integer Implements GfeCore.IDatabases.MessageCountByEcho
         Get
-            Dim ff, hDb As Integer
+            Dim num As Integer
+            Dim fs As Stream
+            Dim br As BinaryReader
 
-            hDb = CreateFile(EchoPath, GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, 0, 0)
+            Try
+                fs = New FileStream(EchoPath, FileMode.Open)
+                br = New BinaryReader(fs)
 
-            If hDb < 0 Then
-                'база не существует, создаем ее
-                'CreateDefaultBase Echo
-                MessageCountByEcho = 0
-                Exit Property
-            End If
-
-            'считываем
-            If SetFilePointer(hDb, 12, 0, FILE_BEGIN) = 0 Then
-                'ApiErrorLookup(GetLastError, "jamBase::MessageCountByEcho")
-                CloseHandle(hDb)
-                MessageCountByEcho = 0
-                Exit Property
-            End If
-
-            If ReadFile(hDb, ff, 4, 0, 0) = 0 Then
-                'ApiErrorLookup(GetLastError, "jamBase::MessageCountByEcho")
-                CloseHandle(hDb)
-                MessageCountByEcho = 0
-                Exit Property
-            End If
-
-            If ff <= 0 Then
-
-                'проверяем на корректность базу
-                If GetFileSize(hDb, 0) < 1024 Then
-                    'база битая делаем ее дефолтной.
-                    CloseHandle(hDb)
-                    'CreateDefaultBase(Echo)
-                    MessageCountByEcho = 0
-                    Exit Property
-                Else
-                    ff = 0
+                If fs.Length <> 0 Then
+                    fs.Seek(12, SeekOrigin.Begin)
+                    num = br.ReadInt32
                 End If
+
+            Catch e As System.IO.FileNotFoundException
+                MsgBox("Файл " & EchoPath & " не найден.", MsgBoxStyle.Exclamation)
+                Return 0
+            Catch ex As Exception
+                MsgBox("Ошибка чтения! " & ex.Message, MsgBoxStyle.Exclamation)
+                Return 0                
+            End Try
+
+            br = Nothing
+            fs.Close()
+
+            If num > 0 Then
+                Return num
+            Else
+                Return 0
             End If
-
-            CloseHandle(hDb)
-
-            MessageCountByEcho = ff
 
         End Get
     End Property
@@ -462,11 +423,9 @@ Public Class Database
             msgFlags = value
         End Set
     End Property
-
     Public Function MessageStatus(ByVal NumberMessage As Integer, Optional ByVal Status As Integer = -1) As Integer Implements GfeCore.IDatabases.MessageStatus
 
     End Function
-
     Public Property MessageText() As String Implements GfeCore.IDatabases.MessageText
         Get
             Return msgText
@@ -524,7 +483,6 @@ Public Class Database
             msgReplayFirst = value
         End Set
     End Property
-
     Public Property ReplayNext() As Integer Implements GfeCore.IDatabases.ReplayNext
         Get
             Return msgReplayNext
@@ -533,7 +491,6 @@ Public Class Database
             msgReplayNext = value
         End Set
     End Property
-
     Public Property ReplayNextS() As String Implements GfeCore.IDatabases.ReplayNextS
         Get
             Return ""
@@ -542,7 +499,6 @@ Public Class Database
             'null for jam
         End Set
     End Property
-
     Public Property ReplayTo() As Integer Implements GfeCore.IDatabases.ReplayTo
         Get
             Return msgReplayTo
@@ -551,7 +507,6 @@ Public Class Database
             msgReplayTo = value
         End Set
     End Property
-
     Public Property Subject() As String Implements GfeCore.IDatabases.Subject
         Get
             If InStr(1, msgSubj, "?koi8-r", CompareMethod.Text) <> 0 Then
@@ -565,7 +520,6 @@ Public Class Database
             msgSubj = value
         End Set
     End Property
-
     Public Property [To]() As String Implements GfeCore.IDatabases.To
         Get
             Return msgTo
@@ -574,7 +528,6 @@ Public Class Database
             msgTo = value
         End Set
     End Property
-
     Public Property ToAddr() As String Implements GfeCore.IDatabases.ToAddr
         Get
             Return msgToAddr
@@ -583,7 +536,6 @@ Public Class Database
             msgToAddr = value
         End Set
     End Property
-
     Public Function WriteMessage() As Integer Implements GfeCore.IDatabases.WriteMessage
 
     End Function
@@ -677,7 +629,6 @@ Public Class Database
     End Function
 
 #End Region
-
 
     Private disposed As Boolean = False
 
