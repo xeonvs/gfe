@@ -137,7 +137,6 @@ Public Class Database
             Return IDatabasesTypes.enmBaseType.Jam
         End Get
     End Property
-
     Public Property DateArrived() As Integer Implements GfeCore.IDatabases.DateArrived
         Get
             Return msgDateArrived
@@ -146,7 +145,6 @@ Public Class Database
             msgDateArrived = value
         End Set
     End Property
-
     Public Property DateWritten() As Integer Implements GfeCore.IDatabases.DateWritten
         Get
             Return msgDateWritten
@@ -155,7 +153,6 @@ Public Class Database
             msgDateWritten = value
         End Set
     End Property
-
     Public Property DBName() As String Implements GfeCore.IDatabases.DBName
         Get
             Return strDBname
@@ -164,11 +161,9 @@ Public Class Database
             strDBname = value
         End Set
     End Property
-
     Public Sub DeleteMessageByNum(ByVal NumberMessage As Integer) Implements GfeCore.IDatabases.DeleteMessageByNum
 
     End Sub
-
     Public Property EchoName() As String Implements GfeCore.IDatabases.EchoName
         Get
             Return strEchoName
@@ -177,7 +172,6 @@ Public Class Database
             strEchoName = value
         End Set
     End Property
-
     Public Property From() As String Implements GfeCore.IDatabases.From
         Get
             Return msgFrom
@@ -186,7 +180,6 @@ Public Class Database
             msgFrom = value
         End Set
     End Property
-
     Public Property FromAddr() As String Implements GfeCore.IDatabases.FromAddr
         Get
             Return msgFromAddr
@@ -195,7 +188,6 @@ Public Class Database
             msgFromAddr = value
         End Set
     End Property
-
     ''' <summary>
     '''  Возвращает раскодированные заголовки письма
     ''' </summary>
@@ -321,7 +313,6 @@ Public Class Database
         Loop Until Not (ss < sublen)
 
     End Sub
-
     ''' <summary>
     '''  Возвращает полные раскодированные заголовки письма
     ''' </summary>
@@ -330,7 +321,6 @@ Public Class Database
     Public Sub GetHeadesByNumAll(ByVal NumberMessage As Integer) Implements GfeCore.IDatabases.GetHeadesByNumAll
 
     End Sub
-
     Public Sub GetHeadesByNumForTree(ByVal NumberMessage As Integer) Implements GfeCore.IDatabases.GetHeadesByNumForTree
         'msgReplayTo
         'msgReplayFirst
@@ -338,10 +328,9 @@ Public Class Database
         'msgSubj
         'msgFrom
     End Sub
-
     Public Function GetLastReadMsgNum(Optional ByVal msgNumber As Integer = 0) As Integer Implements GfeCore.IDatabases.GetLastReadMsgNum
         Dim fsL As Stream
-        Dim brL As BinaryReader
+        Dim brL As BinaryReader, bwL As BinaryWriter
         Dim msgn As Integer
 
         Try
@@ -354,12 +343,23 @@ Public Class Database
             Exit Function
         End Try
 
-        If fsL.Length <> 0 Then
-            fsL.Seek(8, SeekOrigin.Begin)
-            msgn = brL.ReadInt32
+        If msgNumber = 0 Then
+            If fsL.Length <> 0 Then
+                fsL.Seek(8, SeekOrigin.Begin)
+                msgn = brL.ReadInt32
+            End If
+
+        Else 'сохраняем состояние
+            If fsL.Length <> 0 Then
+                bwL = New BinaryWriter(fsL)
+                fsL.Seek(8, SeekOrigin.Begin)
+                bwL.Write(msgNumber)
+                msgn = msgNumber
+            End If
         End If
 
         fsL.Close()
+        bwL = Nothing
         brL = Nothing
         fsL = Nothing
 
