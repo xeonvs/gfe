@@ -26,6 +26,7 @@ Partial Public Class frmMailEditor
         Me.Panel1 = New System.Windows.Forms.Panel
         Me.GroupBoxFlags = New System.Windows.Forms.GroupBox
         Me.cmdOrgin = New System.Windows.Forms.Button
+        Me.cboToAddr = New System.Windows.Forms.ComboBox
         Me.cboFromAddr = New System.Windows.Forms.ComboBox
         Me.txtSubj = New System.Windows.Forms.TextBox
         Me.txtTo = New System.Windows.Forms.TextBox
@@ -65,7 +66,7 @@ Partial Public Class frmMailEditor
         Me.pasteToolStripButton = New System.Windows.Forms.ToolStripButton
         Me.toolStripSeparator7 = New System.Windows.Forms.ToolStripSeparator
         Me.ToolTipMailEditor = New System.Windows.Forms.ToolTip(Me.components)
-        Me.cboToAddr = New System.Windows.Forms.ComboBox
+        Me.SendToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripContainer.BottomToolStripPanel.SuspendLayout()
         Me.ToolStripContainer.ContentPanel.SuspendLayout()
         Me.ToolStripContainer.RightToolStripPanel.SuspendLayout()
@@ -87,6 +88,7 @@ Partial Public Class frmMailEditor
         '
         Me.ToolStripContainer.ContentPanel.Controls.Add(Me.Panel1)
         Me.ToolStripContainer.ContentPanel.Controls.Add(Me.rtfMessage)
+        Me.ToolStripContainer.ContentPanel.Size = New System.Drawing.Size(590, 361)
         Me.ToolStripContainer.Dock = System.Windows.Forms.DockStyle.Fill
         Me.ToolStripContainer.Location = New System.Drawing.Point(0, 0)
         Me.ToolStripContainer.Name = "ToolStripContainer"
@@ -107,11 +109,10 @@ Partial Public Class frmMailEditor
         'StatusStrip
         '
         Me.StatusStrip.Dock = System.Windows.Forms.DockStyle.None
-        Me.StatusStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.Table
         Me.StatusStrip.Location = New System.Drawing.Point(0, 0)
         Me.StatusStrip.Name = "StatusStrip"
         Me.StatusStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional
-        Me.StatusStrip.Size = New System.Drawing.Size(616, 23)
+        Me.StatusStrip.Size = New System.Drawing.Size(616, 22)
         Me.StatusStrip.TabIndex = 0
         Me.StatusStrip.Text = "StatusStrip"
         '
@@ -131,13 +132,13 @@ Partial Public Class frmMailEditor
         Me.Panel1.Dock = System.Windows.Forms.DockStyle.Top
         Me.Panel1.Location = New System.Drawing.Point(0, 0)
         Me.Panel1.Name = "Panel1"
-        Me.Panel1.Size = New System.Drawing.Size(566, 128)
+        Me.Panel1.Size = New System.Drawing.Size(590, 128)
         Me.Panel1.TabIndex = 1
         '
         'GroupBoxFlags
         '
         Me.GroupBoxFlags.Anchor = System.Windows.Forms.AnchorStyles.Top
-        Me.GroupBoxFlags.Location = New System.Drawing.Point(85, 80)
+        Me.GroupBoxFlags.Location = New System.Drawing.Point(97, 80)
         Me.GroupBoxFlags.Name = "GroupBoxFlags"
         Me.GroupBoxFlags.Size = New System.Drawing.Size(336, 40)
         Me.GroupBoxFlags.TabIndex = 9
@@ -150,17 +151,27 @@ Partial Public Class frmMailEditor
         Me.cmdOrgin.FlatAppearance.BorderSize = 0
         Me.cmdOrgin.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.cmdOrgin.ForeColor = System.Drawing.SystemColors.ActiveCaption
-        Me.cmdOrgin.Location = New System.Drawing.Point(473, 96)
+        Me.cmdOrgin.Location = New System.Drawing.Point(497, 96)
         Me.cmdOrgin.Name = "cmdOrgin"
         Me.cmdOrgin.Size = New System.Drawing.Size(75, 23)
         Me.cmdOrgin.TabIndex = 8
         Me.cmdOrgin.Text = "Origin"
         '
+        'cboToAddr
+        '
+        Me.cboToAddr.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.cboToAddr.FormattingEnabled = True
+        Me.cboToAddr.Location = New System.Drawing.Point(460, 32)
+        Me.cboToAddr.Name = "cboToAddr"
+        Me.cboToAddr.Size = New System.Drawing.Size(114, 21)
+        Me.cboToAddr.TabIndex = 7
+        Me.cboToAddr.Visible = False
+        '
         'cboFromAddr
         '
         Me.cboFromAddr.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.cboFromAddr.FormattingEnabled = True
-        Me.cboFromAddr.Location = New System.Drawing.Point(436, 8)
+        Me.cboFromAddr.Location = New System.Drawing.Point(460, 8)
         Me.cboFromAddr.Name = "cboFromAddr"
         Me.cboFromAddr.Size = New System.Drawing.Size(114, 21)
         Me.cboFromAddr.TabIndex = 6
@@ -171,7 +182,7 @@ Partial Public Class frmMailEditor
                     Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.txtSubj.Location = New System.Drawing.Point(48, 56)
         Me.txtSubj.Name = "txtSubj"
-        Me.txtSubj.Size = New System.Drawing.Size(503, 20)
+        Me.txtSubj.Size = New System.Drawing.Size(527, 20)
         Me.txtSubj.TabIndex = 5
         '
         'txtTo
@@ -180,7 +191,7 @@ Partial Public Class frmMailEditor
                     Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.txtTo.Location = New System.Drawing.Point(48, 32)
         Me.txtTo.Name = "txtTo"
-        Me.txtTo.Size = New System.Drawing.Size(382, 20)
+        Me.txtTo.Size = New System.Drawing.Size(406, 20)
         Me.txtTo.TabIndex = 4
         '
         'txtFrom
@@ -189,7 +200,7 @@ Partial Public Class frmMailEditor
                     Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.txtFrom.Location = New System.Drawing.Point(48, 8)
         Me.txtFrom.Name = "txtFrom"
-        Me.txtFrom.Size = New System.Drawing.Size(382, 20)
+        Me.txtFrom.Size = New System.Drawing.Size(406, 20)
         Me.txtFrom.TabIndex = 3
         '
         'lblSubj
@@ -197,7 +208,7 @@ Partial Public Class frmMailEditor
         Me.lblSubj.AutoSize = True
         Me.lblSubj.Location = New System.Drawing.Point(8, 64)
         Me.lblSubj.Name = "lblSubj"
-        Me.lblSubj.Size = New System.Drawing.Size(33, 13)
+        Me.lblSubj.Size = New System.Drawing.Size(37, 13)
         Me.lblSubj.TabIndex = 2
         Me.lblSubj.Text = "Тема:"
         '
@@ -206,7 +217,7 @@ Partial Public Class frmMailEditor
         Me.lblTo.AutoSize = True
         Me.lblTo.Location = New System.Drawing.Point(8, 40)
         Me.lblTo.Name = "lblTo"
-        Me.lblTo.Size = New System.Drawing.Size(32, 13)
+        Me.lblTo.Size = New System.Drawing.Size(36, 13)
         Me.lblTo.TabIndex = 1
         Me.lblTo.Text = "Кому:"
         '
@@ -215,7 +226,7 @@ Partial Public Class frmMailEditor
         Me.lblFrom.AutoSize = True
         Me.lblFrom.Location = New System.Drawing.Point(24, 16)
         Me.lblFrom.Name = "lblFrom"
-        Me.lblFrom.Size = New System.Drawing.Size(19, 13)
+        Me.lblFrom.Size = New System.Drawing.Size(23, 13)
         Me.lblFrom.TabIndex = 0
         Me.lblFrom.Text = "От:"
         '
@@ -226,24 +237,24 @@ Partial Public Class frmMailEditor
                     Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.rtfMessage.Location = New System.Drawing.Point(0, 128)
         Me.rtfMessage.Name = "rtfMessage"
-        Me.rtfMessage.Size = New System.Drawing.Size(1837, 788)
+        Me.rtfMessage.Size = New System.Drawing.Size(2277, 999)
         Me.rtfMessage.TabIndex = 0
         Me.rtfMessage.Text = ""
         '
         'ToolStripSmiles
         '
         Me.ToolStripSmiles.Dock = System.Windows.Forms.DockStyle.None
-        Me.ToolStripSmiles.Location = New System.Drawing.Point(25, 0)
+        Me.ToolStripSmiles.Location = New System.Drawing.Point(0, 3)
         Me.ToolStripSmiles.Name = "ToolStripSmiles"
         Me.ToolStripSmiles.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional
-        Me.ToolStripSmiles.Size = New System.Drawing.Size(25, 111)
+        Me.ToolStripSmiles.Size = New System.Drawing.Size(26, 111)
         Me.ToolStripSmiles.TabIndex = 0
         '
         'MainMenu
         '
         Me.MainMenu.Anchor = System.Windows.Forms.AnchorStyles.None
         Me.MainMenu.Dock = System.Windows.Forms.DockStyle.None
-        Me.MainMenu.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.fileToolStripMenuItem, Me.editToolStripMenuItem})
+        Me.MainMenu.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.fileToolStripMenuItem, Me.editToolStripMenuItem, Me.SendToolStripMenuItem})
         Me.MainMenu.Location = New System.Drawing.Point(0, 0)
         Me.MainMenu.Name = "MainMenu"
         Me.MainMenu.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional
@@ -255,6 +266,7 @@ Partial Public Class frmMailEditor
         '
         Me.fileToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.newToolStripMenuItem, Me.toolStripSeparator, Me.saveToolStripMenuItem, Me.saveAsToolStripMenuItem, Me.toolStripSeparator1, Me.printToolStripMenuItem, Me.printPreviewToolStripMenuItem, Me.toolStripSeparator2, Me.exitToolStripMenuItem})
         Me.fileToolStripMenuItem.Name = "fileToolStripMenuItem"
+        Me.fileToolStripMenuItem.Size = New System.Drawing.Size(35, 20)
         Me.fileToolStripMenuItem.Text = "&File"
         '
         'newToolStripMenuItem
@@ -263,11 +275,13 @@ Partial Public Class frmMailEditor
         Me.newToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.newToolStripMenuItem.Name = "newToolStripMenuItem"
         Me.newToolStripMenuItem.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.N), System.Windows.Forms.Keys)
+        Me.newToolStripMenuItem.Size = New System.Drawing.Size(152, 22)
         Me.newToolStripMenuItem.Text = "&New"
         '
         'toolStripSeparator
         '
         Me.toolStripSeparator.Name = "toolStripSeparator"
+        Me.toolStripSeparator.Size = New System.Drawing.Size(149, 6)
         '
         'saveToolStripMenuItem
         '
@@ -275,16 +289,19 @@ Partial Public Class frmMailEditor
         Me.saveToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.saveToolStripMenuItem.Name = "saveToolStripMenuItem"
         Me.saveToolStripMenuItem.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.S), System.Windows.Forms.Keys)
+        Me.saveToolStripMenuItem.Size = New System.Drawing.Size(152, 22)
         Me.saveToolStripMenuItem.Text = "&Save"
         '
         'saveAsToolStripMenuItem
         '
         Me.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem"
+        Me.saveAsToolStripMenuItem.Size = New System.Drawing.Size(152, 22)
         Me.saveAsToolStripMenuItem.Text = "Save &As"
         '
         'toolStripSeparator1
         '
         Me.toolStripSeparator1.Name = "toolStripSeparator1"
+        Me.toolStripSeparator1.Size = New System.Drawing.Size(149, 6)
         '
         'printToolStripMenuItem
         '
@@ -292,6 +309,7 @@ Partial Public Class frmMailEditor
         Me.printToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.printToolStripMenuItem.Name = "printToolStripMenuItem"
         Me.printToolStripMenuItem.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.P), System.Windows.Forms.Keys)
+        Me.printToolStripMenuItem.Size = New System.Drawing.Size(152, 22)
         Me.printToolStripMenuItem.Text = "&Print"
         '
         'printPreviewToolStripMenuItem
@@ -299,38 +317,45 @@ Partial Public Class frmMailEditor
         Me.printPreviewToolStripMenuItem.Image = CType(resources.GetObject("printPreviewToolStripMenuItem.Image"), System.Drawing.Image)
         Me.printPreviewToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.printPreviewToolStripMenuItem.Name = "printPreviewToolStripMenuItem"
+        Me.printPreviewToolStripMenuItem.Size = New System.Drawing.Size(152, 22)
         Me.printPreviewToolStripMenuItem.Text = "Print Pre&view"
         '
         'toolStripSeparator2
         '
         Me.toolStripSeparator2.Name = "toolStripSeparator2"
+        Me.toolStripSeparator2.Size = New System.Drawing.Size(149, 6)
         '
         'exitToolStripMenuItem
         '
         Me.exitToolStripMenuItem.Name = "exitToolStripMenuItem"
+        Me.exitToolStripMenuItem.Size = New System.Drawing.Size(152, 22)
         Me.exitToolStripMenuItem.Text = "E&xit"
         '
         'editToolStripMenuItem
         '
         Me.editToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.undoToolStripMenuItem, Me.redoToolStripMenuItem, Me.toolStripSeparator3, Me.cutToolStripMenuItem, Me.copyToolStripMenuItem, Me.pasteToolStripMenuItem, Me.toolStripSeparator4, Me.selectAllToolStripMenuItem})
         Me.editToolStripMenuItem.Name = "editToolStripMenuItem"
+        Me.editToolStripMenuItem.Size = New System.Drawing.Size(37, 20)
         Me.editToolStripMenuItem.Text = "&Edit"
         '
         'undoToolStripMenuItem
         '
         Me.undoToolStripMenuItem.Name = "undoToolStripMenuItem"
         Me.undoToolStripMenuItem.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.Z), System.Windows.Forms.Keys)
+        Me.undoToolStripMenuItem.Size = New System.Drawing.Size(150, 22)
         Me.undoToolStripMenuItem.Text = "&Undo"
         '
         'redoToolStripMenuItem
         '
         Me.redoToolStripMenuItem.Name = "redoToolStripMenuItem"
         Me.redoToolStripMenuItem.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.Y), System.Windows.Forms.Keys)
+        Me.redoToolStripMenuItem.Size = New System.Drawing.Size(150, 22)
         Me.redoToolStripMenuItem.Text = "&Redo"
         '
         'toolStripSeparator3
         '
         Me.toolStripSeparator3.Name = "toolStripSeparator3"
+        Me.toolStripSeparator3.Size = New System.Drawing.Size(147, 6)
         '
         'cutToolStripMenuItem
         '
@@ -338,6 +363,7 @@ Partial Public Class frmMailEditor
         Me.cutToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.cutToolStripMenuItem.Name = "cutToolStripMenuItem"
         Me.cutToolStripMenuItem.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.X), System.Windows.Forms.Keys)
+        Me.cutToolStripMenuItem.Size = New System.Drawing.Size(150, 22)
         Me.cutToolStripMenuItem.Text = "Cu&t"
         '
         'copyToolStripMenuItem
@@ -346,6 +372,7 @@ Partial Public Class frmMailEditor
         Me.copyToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.copyToolStripMenuItem.Name = "copyToolStripMenuItem"
         Me.copyToolStripMenuItem.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.C), System.Windows.Forms.Keys)
+        Me.copyToolStripMenuItem.Size = New System.Drawing.Size(150, 22)
         Me.copyToolStripMenuItem.Text = "&Copy"
         '
         'pasteToolStripMenuItem
@@ -354,25 +381,28 @@ Partial Public Class frmMailEditor
         Me.pasteToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.pasteToolStripMenuItem.Name = "pasteToolStripMenuItem"
         Me.pasteToolStripMenuItem.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.V), System.Windows.Forms.Keys)
+        Me.pasteToolStripMenuItem.Size = New System.Drawing.Size(150, 22)
         Me.pasteToolStripMenuItem.Text = "&Paste"
         '
         'toolStripSeparator4
         '
         Me.toolStripSeparator4.Name = "toolStripSeparator4"
+        Me.toolStripSeparator4.Size = New System.Drawing.Size(147, 6)
         '
         'selectAllToolStripMenuItem
         '
         Me.selectAllToolStripMenuItem.Name = "selectAllToolStripMenuItem"
+        Me.selectAllToolStripMenuItem.Size = New System.Drawing.Size(150, 22)
         Me.selectAllToolStripMenuItem.Text = "Select &All"
         '
         'ToolStripStandart
         '
         Me.ToolStripStandart.Dock = System.Windows.Forms.DockStyle.None
         Me.ToolStripStandart.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.newToolStripButton, Me.saveToolStripButton, Me.printToolStripButton, Me.toolStripSeparator6, Me.cutToolStripButton, Me.copyToolStripButton, Me.pasteToolStripButton, Me.toolStripSeparator7})
-        Me.ToolStripStandart.Location = New System.Drawing.Point(0, 24)
+        Me.ToolStripStandart.Location = New System.Drawing.Point(3, 24)
         Me.ToolStripStandart.Name = "ToolStripStandart"
         Me.ToolStripStandart.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional
-        Me.ToolStripStandart.Size = New System.Drawing.Size(192, 25)
+        Me.ToolStripStandart.Size = New System.Drawing.Size(162, 25)
         Me.ToolStripStandart.TabIndex = 1
         Me.ToolStripStandart.Text = "ToolStrip2"
         '
@@ -382,6 +412,7 @@ Partial Public Class frmMailEditor
         Me.newToolStripButton.Image = CType(resources.GetObject("newToolStripButton.Image"), System.Drawing.Image)
         Me.newToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.newToolStripButton.Name = "newToolStripButton"
+        Me.newToolStripButton.Size = New System.Drawing.Size(23, 22)
         Me.newToolStripButton.Text = "&New"
         '
         'saveToolStripButton
@@ -390,6 +421,7 @@ Partial Public Class frmMailEditor
         Me.saveToolStripButton.Image = CType(resources.GetObject("saveToolStripButton.Image"), System.Drawing.Image)
         Me.saveToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.saveToolStripButton.Name = "saveToolStripButton"
+        Me.saveToolStripButton.Size = New System.Drawing.Size(23, 22)
         Me.saveToolStripButton.Text = "&Save"
         '
         'printToolStripButton
@@ -398,11 +430,13 @@ Partial Public Class frmMailEditor
         Me.printToolStripButton.Image = CType(resources.GetObject("printToolStripButton.Image"), System.Drawing.Image)
         Me.printToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.printToolStripButton.Name = "printToolStripButton"
+        Me.printToolStripButton.Size = New System.Drawing.Size(23, 22)
         Me.printToolStripButton.Text = "&Print"
         '
         'toolStripSeparator6
         '
         Me.toolStripSeparator6.Name = "toolStripSeparator6"
+        Me.toolStripSeparator6.Size = New System.Drawing.Size(6, 25)
         '
         'cutToolStripButton
         '
@@ -410,6 +444,7 @@ Partial Public Class frmMailEditor
         Me.cutToolStripButton.Image = CType(resources.GetObject("cutToolStripButton.Image"), System.Drawing.Image)
         Me.cutToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.cutToolStripButton.Name = "cutToolStripButton"
+        Me.cutToolStripButton.Size = New System.Drawing.Size(23, 22)
         Me.cutToolStripButton.Text = "C&ut"
         '
         'copyToolStripButton
@@ -418,6 +453,7 @@ Partial Public Class frmMailEditor
         Me.copyToolStripButton.Image = CType(resources.GetObject("copyToolStripButton.Image"), System.Drawing.Image)
         Me.copyToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.copyToolStripButton.Name = "copyToolStripButton"
+        Me.copyToolStripButton.Size = New System.Drawing.Size(23, 22)
         Me.copyToolStripButton.Text = "&Copy"
         '
         'pasteToolStripButton
@@ -426,21 +462,19 @@ Partial Public Class frmMailEditor
         Me.pasteToolStripButton.Image = CType(resources.GetObject("pasteToolStripButton.Image"), System.Drawing.Image)
         Me.pasteToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.pasteToolStripButton.Name = "pasteToolStripButton"
+        Me.pasteToolStripButton.Size = New System.Drawing.Size(23, 22)
         Me.pasteToolStripButton.Text = "&Paste"
         '
         'toolStripSeparator7
         '
         Me.toolStripSeparator7.Name = "toolStripSeparator7"
+        Me.toolStripSeparator7.Size = New System.Drawing.Size(6, 25)
         '
-        'cboToAddr
+        'SendToolStripMenuItem
         '
-        Me.cboToAddr.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.cboToAddr.FormattingEnabled = True
-        Me.cboToAddr.Location = New System.Drawing.Point(436, 32)
-        Me.cboToAddr.Name = "cboToAddr"
-        Me.cboToAddr.Size = New System.Drawing.Size(114, 21)
-        Me.cboToAddr.TabIndex = 7
-        Me.cboToAddr.Visible = False
+        Me.SendToolStripMenuItem.Name = "SendToolStripMenuItem"
+        Me.SendToolStripMenuItem.Size = New System.Drawing.Size(43, 20)
+        Me.SendToolStripMenuItem.Text = "Send"
         '
         'frmMailEditor
         '
@@ -466,7 +500,9 @@ Partial Public Class frmMailEditor
         Me.Panel1.ResumeLayout(False)
         Me.Panel1.PerformLayout()
         Me.MainMenu.ResumeLayout(False)
+        Me.MainMenu.PerformLayout()
         Me.ToolStripStandart.ResumeLayout(False)
+        Me.ToolStripStandart.PerformLayout()
         Me.ResumeLayout(False)
 
     End Sub
@@ -515,4 +551,5 @@ Partial Public Class frmMailEditor
     Friend WithEvents GroupBoxFlags As System.Windows.Forms.GroupBox
     Friend WithEvents cmdOrgin As System.Windows.Forms.Button
     Friend WithEvents cboToAddr As System.Windows.Forms.ComboBox
+    Friend WithEvents SendToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
 End Class
