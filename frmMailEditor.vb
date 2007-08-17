@@ -11,7 +11,6 @@ Public Class frmMailEditor
     Dim myMode As ReplayMode = ReplayMode.NewMail   'Режим работы с базой
     Dim myMessageNumber As Integer                  'Номер сообщения
 
-
     Private Sub exitToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles exitToolStripMenuItem.Click
         Me.Close()
     End Sub
@@ -126,4 +125,7 @@ Public Class frmMailEditor
 
     End Sub
 
+    Private Sub SendToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles SendToolStripMenuItem.Click
+        myEcho.WriteMessage()
+    End Sub
 End Class

@@ -5,10 +5,10 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{B1990938-D0EB-4664-9DB4-906733E22F15}</ProjectGuid>
+    <ProjectGuid>{7B1B5A8A-B8E5-4DBF-A133-A97C49DEED94}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>GfeCore</RootNamespace>
-    <AssemblyName>GfeCore</AssemblyName>
+    <RootNamespace>fipsBase</RootNamespace>
+    <AssemblyName>fipsBase</AssemblyName>
     <MyType>Windows</MyType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -17,16 +17,16 @@
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
     <OutputPath>..\bin\Debug\</OutputPath>
-    <DocumentationFile>GfeCore.xml</DocumentationFile>
+    <DocumentationFile>fipsBase.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>None</DebugType>
+    <DebugType>pdbonly</DebugType>
     <DefineDebug>false</DefineDebug>
     <DefineTrace>true</DefineTrace>
     <Optimize>true</Optimize>
     <OutputPath>..\bin\Release\</OutputPath>
-    <DocumentationFile>GfeCore.xml</DocumentationFile>
+    <DocumentationFile>fipsBase.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
   </PropertyGroup>
   <ItemGroup>
@@ -34,6 +34,7 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
+    <Import Include="GfeCore" />
     <Import Include="Microsoft.VisualBasic" />
     <Import Include="System" />
     <Import Include="System.Collections" />
@@ -41,12 +42,7 @@
     <Import Include="System.Diagnostics" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="clsCRC32.vb" />
-    <Compile Include="IDatabasesTypes.vb" />
-    <Compile Include="IDatabases.vb" />
-    <Compile Include="IModule.vb" />
-    <Compile Include="IModuleInfo.vb" />
-    <None Include="My Project\AssemblyInfo.template.vb" />
+    <Compile Include="fipsBase.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
@@ -78,10 +74,27 @@
     </None>
     <None Include="My Project\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
+      <CustomToolNamespace>My</CustomToolNamespace>
       <LastGenOutput>Settings.Designer.vb</LastGenOutput>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\GfeCore\GfeCore.vbproj">
+      <Project>{B1990938-D0EB-4664-9DB4-906733E22F15}</Project>
+      <Name>GfeCore</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ModuleIcon.ico" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
   <PropertyGroup>
     <PreBuildEvent>"$(SolutionDir)SvnRevision\bin\$(ConfigurationName)\SvnRevision.exe" "$(SolutionDir) " "$(ProjectDir)My Project\AssemblyInfo.template.vb" "$(ProjectDir)My Project\AssemblyInfo.vb"</PreBuildEvent>
   </PropertyGroup>

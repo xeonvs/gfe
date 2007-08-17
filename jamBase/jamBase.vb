@@ -39,24 +39,34 @@ Public Class Database
     Private ffsL As String      'filename for lastread
     Private ffsI As String      'filename for index
     '~~~~~~~~~~~~~~~~~~~~~
-    Private targetEncoding As Encoding = Encoding.GetEncoding(866)
+    Private enc As Encoding = Encoding.GetEncoding(866)
+    Private dtUNIX_DATE As Date = DateTime.Parse("01.01.1970 00:00:00")
+    Private MessageSubFields() As SubField
 
 #End Region
 
 #Region "Sample Jam Base Structure"
-    'заголовок файла *.jhr
-    Private Structure JamHdrType 'offsset
-        <VBFixedString(4)> Dim Signature As String '0
-        Dim Created As Integer '4
-        Dim ModCounter As Integer '8
-        Dim ActiveMsgs As Integer '12
-        Dim PwdCrc As Integer '16
-        Dim BaseMsgNum As Integer '20
-        Dim HighWaterMark As Integer '24
-        <VBFixedString(996)> Public RSRVD As String '28
-    End Structure
 
-    'заголовок мессаг файла *.jhr
+    ''' <summary>
+    ''' заголовок файла *.jhr
+    ''' </summary>
+    ''' <remarks></remarks>
+    Private Structure JamHdrType        'offsset
+        <VBFixedString(4)> Dim Signature As String '0
+        Dim Created As Integer          '4
+        Dim ModCounter As Integer       '8
+        Dim ActiveMsgs As Integer       '12
+        Dim PwdCrc As Integer           '16
+        Dim BaseMsgNum As Integer       '20
+        Dim HighWaterMark As Integer    '24
+        <VBFixedString(996)> Public RSRVD() As String '28
+    End Structure '1024
+
+    ''' <summary>
+    ''' заголовок мессаг файла *.jhr
+    ''' </summary>
+    ''' <remarks></remarks>
+    ''' 
     Private Structure JamMsgHdrType
         <VBFixedString(4)> Dim Signature As String  '0
         Dim Rev As Short            '4
@@ -78,31 +88,46 @@ Public Class Database
         Dim TextLen As Integer      '64
         Dim PwdCrc As Integer       '68
         Dim Cost As Integer         '72
-    End Structure
+    End Structure '76
 
-    'Записи в файле *.JDX
+    ''' <summary>
+    ''' Записи в файле *.JDX
+    ''' </summary>
+    ''' <remarks></remarks>
     Private Structure JamJdxType
         Dim MsgToCrc As Integer '0
         Dim HdrLoc As Integer 'The record number (+BaseMsgNum)  '4
-    End Structure
+    End Structure '8
 
-    'Записи в файле *.JLR
+    ''' <summary>
+    ''' Записи в файле *.JLR
+    ''' </summary>
+    ''' <remarks></remarks>
+    ''' 
     Private Structure JamJlrType
-        Dim UserCrc As Integer 'CRC-32 of user name (lowercase) 0
-        Dim UserId As Integer 'Unique UserID 4
-        Dim LastReadMsg As Integer 'Last read message number 8
-        Dim HighReadMsg As Integer 'Highest read message number 12
-    End Structure
+        Dim UserCrc As Integer      'CRC-32 of user name (lowercase) 0
+        Dim UserId As Integer       'Unique UserID 4
+        Dim LastReadMsg As Integer  'Last read message number 8
+        Dim HighReadMsg As Integer  'Highest read message number 12
+    End Structure '16
 
-    'подполя сообщения в заголовке
+    ''' <summary>
+    ''' субполя сообщения в заголовке
+    ''' </summary>
+    ''' <remarks></remarks>
+    ''' 
     Private Structure JamSubFieldType
-        Dim LoId As Short   '0
-        Dim HiId As Short   '2
+        Dim LoId As Short       '0
+        Dim HiId As Short       '2
         Dim DataLen As Integer  '4
         'Data As String * 82
-    End Structure
+    End Structure '8
 
-    'субполя в коллекции сообщений
+    ''' <summary>
+    ''' субполя в коллекции сообщений
+    ''' </summary>
+    ''' <remarks></remarks>
+    ''' 
     Private Structure SubField
         Dim LoId As Integer '0 
         Dim Data As String  '4
@@ -201,7 +226,7 @@ Public Class Database
             fsH.Seek(2, SeekOrigin.Current)
             dl = brH.ReadInt32
             If dl < sublen Then
-                nn = targetEncoding.GetString(brH.ReadBytes(dl), 0, dl)
+                nn = enc.GetString(brH.ReadBytes(dl), 0, dl)
             End If
             Select Case loid
                 Case 0
@@ -362,7 +387,7 @@ Public Class Database
 
         fsT.Seek(textoffset, SeekOrigin.Begin)
 
-        msgText = targetEncoding.GetString(brT.ReadBytes(TextLen), 0, TextLen)
+        msgText = enc.GetString(brT.ReadBytes(TextLen), 0, TextLen)
 
     End Sub
 
@@ -443,7 +468,7 @@ Public Class Database
         numMessages = Me.MessageCountByEcho(strDBname)
 
         Try
-            fsH = New FileStream(strDBname, FileMode.Open, FileAccess.ReadWrite, FileShare.Read)
+            fsH = New FileStream(strDBname, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite)
             brH = New BinaryReader(fsH)
             wrH = New BinaryWriter(fsH)
         Catch e As System.IO.FileNotFoundException
@@ -454,7 +479,7 @@ Public Class Database
         End Try
 
         Try
-            fsT = New FileStream(ffsT, FileMode.Open, FileAccess.ReadWrite, FileShare.Read)
+            fsT = New FileStream(ffsT, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite)
             brT = New BinaryReader(fsT)
             wrT = New BinaryWriter(fsT)
         Catch e As System.IO.FileNotFoundException
@@ -536,7 +561,155 @@ Public Class Database
             msgToAddr = value
         End Set
     End Property
+
     Public Function WriteMessage() As Integer Implements GfeCore.IDatabases.WriteMessage
+        Dim msg, rmsg, cmsg As JamMsgHdrType 'заголовок мессага
+        Dim hdr As JamHdrType 'заголовок
+        Dim idx As JamJdxType 'индекс
+        Dim fie() As JamSubFieldType 'пишется в файл на каждое подполе за ней сразу идет блок данных по подполю
+        Dim datf() As String
+        Dim i, cntFie, sIdx As Integer
+        Dim tmp As String, cur_time As Double
+        Dim crc As New clsCRC32
+        Dim rOffset, ff, inOffset, sLen As Integer
+        Dim lTo(), lSubj(), lFrom(), lText() As Byte
+
+        Dim rtDb As Database
+
+        'дополнительные проверки данных
+        If Len(msgFromAddr) = 0 Then
+            MsgBox("Адрес  отправителя не должен быть пустыми!", MsgBoxStyle.Exclamation + MsgBoxStyle.SystemModal, My.Application.Info.Title)
+            WriteMessage = -1
+            Exit Function
+        End If
+
+        If Len(msgFrom) = 0 Then
+            MsgBox("Имя отправителя не должно быть пустым!", MsgBoxStyle.Exclamation + MsgBoxStyle.SystemModal, My.Application.Info.Title)
+            WriteMessage = -1
+            Exit Function
+        End If
+
+        If Len(msgTo) = 0 Then
+            If MsgBox("Имя получателя не должно быть пустым! Продолжить?", MsgBoxStyle.Question + MsgBoxStyle.YesNo + MsgBoxStyle.ApplicationModal, My.Application.Info.Title) = MsgBoxResult.No Then
+                WriteMessage = -1
+                Exit Function
+            End If
+            msgTo = "All"
+        End If
+
+        cur_time = CDate(DateTime.Now).Subtract(dtUNIX_DATE).TotalSeconds
+
+        'преобразовываем кодировку        
+        lText = enc.GetBytes(msgText & vbCr & Chr(&HDS))
+        lTo = enc.GetBytes(msgTo)
+        lFrom = enc.GetBytes(msgFrom)
+        lSubj = enc.GetBytes(msgSubj)
+
+        'записываем текст сообщения
+        inOffset = fsT.Length
+        wrT.Seek(fsT.Length, SeekOrigin.Begin)
+        wrT.Write(lText)
+        wrT.Flush()
+
+        'добавляем субполя
+        If Len(msgToAddr) = 0 Then
+            cntFie = 8
+        Else
+            cntFie = 9
+        End If
+
+        ReDim fie(cntFie) 'пишется в файл на каждое подполе за ней сразу идет блок данных по подполю
+        ReDim datf(cntFie)
+
+        'ID=0, Name=OADDRESS
+        fie(0).LoId = 0
+        fie(0).DataLen = Len(msgFromAddr)
+        datf(0) = msgFromAddr
+
+        'ID=1, Name=DADDRESS
+        fie(1).LoId = 1
+        fie(1).DataLen = Len(msgToAddr)
+        datf(1) = msgToAddr
+
+        'ID=2, Name=SENDERNAME
+        fie(2).LoId = 2
+        fie(2).DataLen = lFrom.Length
+        datf(2) = Encoding.Default.GetString(lFrom)
+
+        'ID=3, Name=RECEIVERNAME
+        fie(3).LoId = 3
+        fie(3).DataLen = lTo.Length
+        datf(3) = Encoding.Default.GetString(lTo)
+
+        'ID=4, Name=MSGID (addr + id)
+        fie(4).LoId = 4
+        datf(4) = msgFromAddr & " " & Hex(crc.GetStringCRC32(msgFromAddr.ToLower)).ToLower
+        fie(4).DataLen = Len(datf(5))
+
+        'ID=6, Name=SUBJECT msgSubj
+        fie(5).LoId = 6
+        fie(5).DataLen = lSubj.Length
+        datf(5) = Encoding.Default.GetString(lSubj)
+
+        'ID=7, Name=PID
+        fie(6).LoId = 7
+        datf(6) = My.Application.Info.Title
+        fie(6).DataLen = Len(datf(7))
+
+        'ID=2000, Name=FTSKLUDGE
+        fie(7).LoId = 2000
+        fie(7).DataLen = Len("CHRS: CP" & enc.CodePage & " 2")
+        datf(7) = "CHRS: CP" & enc.CodePage & " 2"
+
+        'ID=5, Name=REPLYID
+        fie(8).LoId = 5
+
+        If cntFie = 9 Then
+            If msgReplayTo <> 0 Then
+                'получаем субполя и парсим
+                Me.GetMessageSubFieldsByNumber(msgReplayTo)
+
+                If MessageSubFields Is Nothing Then
+                    'err
+                    Return -1
+                End If
+
+                For i = 0 To MessageSubFields.Length
+
+                    If MessageSubFields(i).LoId = 4 Then
+                        datf(8) = MessageSubFields(i).Data
+                        Exit For
+                    End If
+
+                Next i
+
+            Else
+                datf(8) = msgToAddr & " " & Hex(crc.GetStringCRC32(msgToAddr.ToLower)).ToLower
+            End If
+
+            fie(8).DataLen = Len(datf(8))
+            sLen = fie(8).DataLen
+
+        End If
+
+        sLen = sLen + Len(fie(1)) * cntFie + fie(0).DataLen + fie(1).DataLen + fie(2).DataLen + fie(3).DataLen + fie(4).DataLen + fie(5).DataLen + fie(6).DataLen + fie(7).DataLen
+
+        'получаем заголовок файла для определения BaseMsgNum
+        'Нас отсюда также интересует поле ActiveMsgs в нем будет лежать номер добавленного мессага
+
+        'FileOpen(ff, strDBname, OpenMode.Binary)
+        'FileGet(ff, hdr)
+        'hdr.ActiveMsgs = hdr.ActiveMsgs + 1
+        'hdr.ModCounter = hdr.ModCounter + 1
+        ''If hdr.BaseMsgNum = 1 Then
+        ''   hdr.HighWaterMark = numMessages
+        ''Else
+        ''   hdr.HighWaterMark = hdr.BaseMsgNum + numMessages
+        ''End If
+        'Seek(ff, 1)
+        'FilePut(ff, hdr)
+        'FileClose(ff)
+
 
     End Function
 
@@ -600,6 +773,102 @@ Public Class Database
     End Function
 
     ''' <summary>
+    ''' Получает заголовочную структуру по номеру сообщения
+    ''' </summary>
+    ''' <param name="NumberMessage"></param>
+    ''' <returns>Возвращеет структуру с заголовком сообщения</returns>
+    ''' <remarks></remarks>
+    Private Function GetMessageHeaderByNumber(ByVal NumberMessage As Integer) As JamMsgHdrType
+        Dim msg As JamMsgHdrType
+        Dim fs As FileStream, br As BinaryReader
+
+        If NumberMessage <= 0 Or NumberMessage > numMessages Then
+            Return Nothing
+        End If
+
+        fs = New FileStream(strDBname, FileMode.Open, FileAccess.ReadWrite, FileShare.Read)
+        br = New BinaryReader(fsH)
+
+        fs.Seek(GetMessageOffsetFromIndex(NumberMessage), SeekOrigin.Begin)
+
+        With msg
+            .Signature = enc.GetString(brH.ReadBytes(4), 0, 4)
+            .Rev = br.ReadInt16
+            .Resvd = br.ReadInt16
+            .SubfieldLen = br.ReadInt32
+            .TimesRead = br.ReadInt32
+            .MSGIDcrc = br.ReadInt32
+            .REPLYcrc = br.ReadInt32
+            .ReplyTo = br.ReadInt32
+            .ReplyFirst = br.ReadInt32
+            .ReplyFirst = br.ReadInt32
+            .DateWritten = br.ReadInt32
+            .DateRcvd = br.ReadInt32
+            .DateArrived = br.ReadInt32
+            .MsgNum = br.ReadInt32
+            .Attr1 = br.ReadInt32
+            .Attr2 = br.ReadInt32
+            .TextOfs = br.ReadInt32
+            .TextLen = br.ReadInt32
+            .PwdCrc = br.ReadInt32
+            .Cost = br.ReadInt32
+        End With
+
+        br.Close()
+        fs.Close()
+
+        Return msg
+    End Function
+
+    ''' <summary>
+    ''' Читает суб поля заданного сообщения
+    ''' </summary>
+    ''' <param name="NumberMessage"></param>
+    ''' <remarks>возвращает данные в приватный мембер</remarks>
+    Private Sub GetMessageSubFieldsByNumber(ByVal NumberMessage As Integer)
+        Dim fs As FileStream, br As BinaryReader
+        Dim sublen, ss, dl, loid, i As Integer, data As String
+
+        If NumberMessage <= 0 Or NumberMessage > numMessages Then
+            Exit Sub
+        End If
+
+        fs = New FileStream(strDBname, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite)
+        br = New BinaryReader(fs)
+
+        'Seek to subfield len 
+        fs.Seek(GetMessageOffsetFromIndex(NumberMessage) + 8, SeekOrigin.Begin)
+        sublen = br.ReadInt32
+
+        fs.Seek(64, SeekOrigin.Current) 'to end header
+
+        Erase MessageSubFields
+
+        Do
+            loid = br.ReadInt16()
+            fs.Seek(2, SeekOrigin.Current)
+            dl = br.ReadInt32()
+            If (dl > 512 Or dl < 0) Then
+                dl = sublen - ss - 8 'обрезаем по длинне субполей
+            End If
+
+            data = enc.GetString(br.ReadBytes(dl), 0, dl)
+            ReDim Preserve MessageSubFields(i)            
+            With MessageSubFields(i)
+                .Data = data
+                .LoId = loid                
+            End With
+
+            i += 1
+            ss += 8 + dl 'next field offset
+
+        Loop Until Not (ss < sublen)
+
+        br.Close()
+        fs.Close()
+
+    End Sub
+    ''' <summary>
     ''' 'Возвращает первое письмо в интересующей нас цепочке ответов где поле RaplayNext=0
     ''' </summary>
     Private Function GetReplayNextForAnswer(ByVal NumberMessage As Integer, ByVal FileNum As Integer) As Integer
@@ -660,7 +929,6 @@ Public Class Database
                     MyBase.Finalize()
                 End Try
             End If
-            ' TODO: put code to free unmanaged resources here
         End If
         Me.disposed = True
     End Sub
