@@ -475,7 +475,10 @@ Public Class frmMain
                                 "background-color: " & Win32ColorToHtml(msgBackColor) & "; " & _
                                 "color: " & Win32ColorToHtml(msgMainTextColor)
 
-            htm = "<font size=""2"" color=""" & Win32ColorToHtml(msgMainTextColor) & """>" & curEcho.MessageText & "</font>"
+            htm = "<font size=""2"" color=""" & _
+                Win32ColorToHtml(msgMainTextColor) & """>" & _
+                curEcho.MessageText & "</font>"
+
             htm = htm.Replace(vbCr, "<br>" & vbCrLf)
 
             'заполняем текстом

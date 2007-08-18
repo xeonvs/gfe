@@ -728,24 +728,6 @@ Public Class Database
         OpenDB()
     End Sub
 
-#Region "ModuleInfo"
-    Public Function GetModuleIcon() As System.Drawing.Image Implements GfeCore.IDatabases.GetModuleIcon
-        Return My.Resources.ModuleIcon.ToBitmap
-    End Function
-
-    Public ReadOnly Property Description() As String Implements GfeCore.IModuleInfo.Description
-        Get
-            Return "Jam Module"
-        End Get
-    End Property
-
-    Public ReadOnly Property Name() As String Implements GfeCore.IModuleInfo.Name
-        Get
-            Return "jamBase"
-        End Get
-    End Property
-#End Region
-
 #Region "Private methods"
     ''' <summary>
     '''  Получает из индексного файла смещение интересующего нас письма
@@ -771,7 +753,6 @@ Public Class Database
             Return -1
         End Try
     End Function
-
     ''' <summary>
     ''' Получает заголовочную структуру по номеру сообщения
     ''' </summary>
@@ -819,7 +800,6 @@ Public Class Database
 
         Return msg
     End Function
-
     ''' <summary>
     ''' Читает суб поля заданного сообщения
     ''' </summary>
@@ -853,10 +833,10 @@ Public Class Database
             End If
 
             data = enc.GetString(br.ReadBytes(dl), 0, dl)
-            ReDim Preserve MessageSubFields(i)            
+            ReDim Preserve MessageSubFields(i)
             With MessageSubFields(i)
                 .Data = data
-                .LoId = loid                
+                .LoId = loid
             End With
 
             i += 1
@@ -874,7 +854,6 @@ Public Class Database
     Private Function GetReplayNextForAnswer(ByVal NumberMessage As Integer, ByVal FileNum As Integer) As Integer
 
     End Function
-
     ''' <summary>
     ''' функция декодирует ESC последовательность
     ''' </summary>
@@ -896,7 +875,25 @@ Public Class Database
         Return ret
 
     End Function
+#End Region
 
+
+#Region "ModuleInfo"
+    Public Function GetModuleIcon() As System.Drawing.Image Implements GfeCore.IDatabases.GetModuleIcon
+        Return My.Resources.ModuleIcon.ToBitmap
+    End Function
+
+    Public ReadOnly Property Description() As String Implements GfeCore.IModuleInfo.Description
+        Get
+            Return "Jam Module"
+        End Get
+    End Property
+
+    Public ReadOnly Property Name() As String Implements GfeCore.IModuleInfo.Name
+        Get
+            Return "jamBase"
+        End Get
+    End Property
 #End Region
 
     Private disposed As Boolean = False
