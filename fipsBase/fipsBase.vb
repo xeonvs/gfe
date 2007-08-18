@@ -337,31 +337,37 @@ Public Class Database
     End Property
     Public ReadOnly Property MessageCountByEcho(ByVal EchoPath As String) As Integer Implements GfeCore.IDatabases.MessageCountByEcho
         Get
-            ' TODO: данный код требует переписки с учетом файловых потоков, 
-            ' а также с целью избавиться от цикла.
-            Dim ech, aaf, ech2 As String
-            Dim ff As Integer
-            Dim arRec() As AreaRecord
+            Dim ech, ech2, fln As String, ret As Integer
+            Dim fsA As FileStream
+            Dim brA As BinaryReader
 
-            aaf = Mid(EchoPath, 1, InStrRev(EchoPath, "\")) & "areas.wwd"
             ech = Replace(Mid(EchoPath, InStrRev(EchoPath, "\") + 1, EchoPath.Length), ".hdr", "", , , CompareMethod.Text)
 
-            ff = FreeFile()
-            FileOpen(ff, aaf, OpenMode.Binary)
-            ReDim arRec((LOF(ff) / 562) - 1)
-            FileGet(ff, arRec) 'читаем все сразу
-            FileClose(ff)
+            Try
+                fsA = New FileStream(Mid(EchoPath, 1, InStrRev(EchoPath, "\")) & "areas.wwd", FileMode.Open)
+                bra = New BinaryReader(fsA)
+            Catch
+                MsgBox("Ошибка чнения файла: " & Mid(EchoPath, 1, InStrRev(EchoPath, "\")) & "areas.wwd")
+                Exit Property
+            End Try
 
             ech2 = ech & Chr(0) & Space(128 - Len(ech) - 1)
             ech = ech & New String(Chr(0), 128 - Len(ech))
 
-            For ff = 0 To UBound(arRec)
-
-                If arRec(ff).FileName = ech Or arRec(ff).FileName = ech2 Then
-                    Return arRec(ff).NumberOfMails
+            For ff As Integer = 0 To (fsA.Length / 562) - 1
+                fsA.Seek(562 * ff + 242, SeekOrigin.Begin)
+                fln = enc.GetString(bra.ReadBytes(128), 0, 128)
+                If fln = ech Or fln = ech2 Then
+                    fsA.Seek(104, SeekOrigin.Current)
+                    ret = bra.ReadInt32
+                    fsA.Close()
+                    bra.Close()
+                    Return ret
                 End If
-
             Next
+
+            fsA.Close()
+            brA.Close()
 
             Return 0
 
@@ -391,7 +397,7 @@ Public Class Database
 
         numMessages = Me.MessageCountByEcho(strDBname)
         EchoID = GetAreaIdByEchoPath(strDBname)
-        strEchoName = GetEchoNameByEchoPath(strDBname)
+        strEchoName = GetEchoNameByEchoId(strDBname, EchoID)
 
         Try
             fsH = New FileStream(strDBname, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite)
@@ -496,36 +502,35 @@ Public Class Database
     ''' <returns>Порядковый номер</returns>
     ''' <remarks>Вернет -1 если эха не найдена</remarks>
     Private Function GetAreaIdByEchoPath(ByVal EchoPath As String) As Integer
-        Dim ech, aaf, ech2 As String
-        Dim ff As Integer
-        Dim arRec() As AreaRecord
+        Dim ech, ech2, fln As String
+        Dim fsA As FileStream
+        Dim brA As BinaryReader
+
+        ech = Replace(Mid(EchoPath, InStrRev(EchoPath, "\") + 1, EchoPath.Length), ".hdr", "", , , CompareMethod.Text)
 
         Try
-
-            aaf = Mid(EchoPath, 1, InStrRev(EchoPath, "\")) & "areas.wwd"
-            ech = Replace(Mid(EchoPath, InStrRev(EchoPath, "\") + 1, EchoPath.Length), ".hdr", "", , , CompareMethod.Text)
-
-            ff = FreeFile()
-            FileOpen(ff, aaf, OpenMode.Binary)
-            ReDim arRec((LOF(ff) / 562) - 1)
-            FileGet(ff, arRec) 'читаем все сразу
-            FileClose(ff)
-
-            ech2 = ech & Chr(0) & Space(128 - Len(ech) - 1)
-            ech = ech & New String(Chr(0), 128 - Len(ech))
-
-            For ff = 0 To UBound(arRec)
-
-                If arRec(ff).FileName = ech Or arRec(ff).FileName = ech2 Then
-                    Return ff
-                    'strEchoName = arRec(ff).Echotag
-                End If
-
-            Next
-
+            fsA = New FileStream(Mid(EchoPath, 1, InStrRev(EchoPath, "\")) & "areas.wwd", FileMode.Open)
+            brA = New BinaryReader(fsA)
         Catch
-            '
+            MsgBox("Ошибка чнения файла: " & Mid(EchoPath, 1, InStrRev(EchoPath, "\")) & "areas.wwd")
+            Exit Function
         End Try
+
+        ech2 = ech & Chr(0) & Space(128 - Len(ech) - 1)
+        ech = ech & New String(Chr(0), 128 - Len(ech))
+
+        For ff As Integer = 0 To (fsA.Length / 562) - 1
+            fsA.Seek(562 * ff + 242, SeekOrigin.Begin)
+            fln = enc.GetString(brA.ReadBytes(128), 0, 128)
+            If fln = ech Or fln = ech2 Then
+                fsA.Close()
+                brA.Close()
+                Return ff
+            End If
+        Next
+
+        fsA.Close()
+        brA.Close()
 
         Return -1
 
@@ -537,38 +542,28 @@ Public Class Database
     ''' <param name="EchoPath"></param>
     ''' <returns></returns>
     ''' <remarks></remarks>
-    Private Function GetEchoNameByEchoPath(ByVal EchoPath As String) As String
-        Dim ech, aaf, ech2 As String
-        Dim ff As Integer
-        Dim arRec() As AreaRecord
+    Private Function GetEchoNameByEchoId(ByVal EchoPath As String, ByVal EchoId As Integer) As String
+        Dim ech As String
+        Dim fsA As FileStream
+        Dim brA As BinaryReader
+
+        ech = Replace(Mid(EchoPath, InStrRev(EchoPath, "\") + 1, EchoPath.Length), ".hdr", "", , , CompareMethod.Text)
 
         Try
-
-            aaf = Mid(EchoPath, 1, InStrRev(EchoPath, "\")) & "areas.wwd"
-            ech = Replace(Mid(EchoPath, InStrRev(EchoPath, "\") + 1, EchoPath.Length), ".hdr", "", , , CompareMethod.Text)
-
-            ff = FreeFile()
-            FileOpen(ff, aaf, OpenMode.Binary)
-            ReDim arRec((LOF(ff) / 562) - 1)
-            FileGet(ff, arRec) 'читаем все сразу
-            FileClose(ff)
-
-            ech2 = ech & Chr(0) & Space(128 - Len(ech) - 1)
-            ech = ech & New String(Chr(0), 128 - Len(ech))
-
-            For ff = 0 To UBound(arRec)
-
-                If arRec(ff).FileName = ech Or arRec(ff).FileName = ech2 Then
-                    Return arRec(ff).Echotag
-                End If
-
-            Next
-
+            fsA = New FileStream(Mid(EchoPath, 1, InStrRev(EchoPath, "\")) & "areas.wwd", FileMode.Open)
+            brA = New BinaryReader(fsA)
         Catch
-            '
+            MsgBox("Ошибка чнения файла: " & Mid(EchoPath, 1, InStrRev(EchoPath, "\")) & "areas.wwd")
+            Return ""
         End Try
 
-        Return ""
+        fsA.Seek(562 * EchoId + 141, SeekOrigin.Begin)
+        ech = enc.GetString(brA.ReadBytes(101), 0, 101).Replace(Chr(0), "")
+
+        fsA.Close()
+        brA.Close()
+
+        Return ech
 
     End Function
 
