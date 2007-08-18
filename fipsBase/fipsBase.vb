@@ -274,6 +274,50 @@ Public Class Database
 
     End Sub
     Public Function GetLastReadMsgNum(Optional ByVal msgNumber As Integer = 0) As Integer Implements GfeCore.IDatabases.GetLastReadMsgNum
+        Dim ret As Integer
+        Dim fsA As FileStream
+        Dim brA As BinaryReader
+        Dim bwA As BinaryWriter
+
+        If msgNumber = 0 Then
+
+            Try
+                fsA = New FileStream(Mid(strDBname, 1, InStrRev(strDBname, "\")) & "areas.wwd", FileMode.Open)
+                brA = New BinaryReader(fsA)
+            Catch ex As Exception
+                MsgBox("Ошибка чнения файла: " & Mid(strDBname, 1, InStrRev(strDBname, "\")) & "areas.wwd" & vbCrLf & ex.Message)
+                Return -1
+            End Try
+
+            fsA.Seek(562 * EchoID + 370, SeekOrigin.Begin)
+            ret = brA.ReadInt32
+
+            If ret < 0 Then
+                ret = 1
+            ElseIf ret > numMessages Then
+                ret = numMessages
+            End If
+
+            brA.Close()
+            fsA.Close()
+
+            Return ret
+        Else
+            'write
+            bwA = New BinaryWriter(fsA)
+            Try
+                fsA.Seek(562 * EchoID + 370, SeekOrigin.Begin)
+                bwA.Write(msgNumber)
+            Catch ex As Exception
+                MsgBox("Ошибка записи LastRead в areas.wwd" & vbCrLf & ex.Message)
+                Return -1
+            End Try
+
+            bwA.Flush()
+            bwA.Close()
+            fsA.Close()
+
+        End If
 
     End Function
     Public Sub GetMessageByNum(ByVal NumberMessage As Integer) Implements GfeCore.IDatabases.GetMessageByNum
@@ -397,6 +441,11 @@ Public Class Database
 
         numMessages = Me.MessageCountByEcho(strDBname)
         EchoID = GetAreaIdByEchoPath(strDBname)
+	
+	If EchoID < 0 Then
+            Exit Sub
+        End If
+
         strEchoName = GetEchoNameByEchoId(strDBname, EchoID)
 
         Try
