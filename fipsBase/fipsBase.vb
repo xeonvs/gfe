@@ -279,17 +279,20 @@ Public Class Database
         Dim brA As BinaryReader
         Dim bwA As BinaryWriter
 
-        If msgNumber = 0 Then
-
-            Try
-                fsA = New FileStream(Mid(strDBname, 1, InStrRev(strDBname, "\")) & "areas.wwd", FileMode.Open)
-                brA = New BinaryReader(fsA)
-            Catch ex As Exception
-                MsgBox("Ошибка чнения файла: " & Mid(strDBname, 1, InStrRev(strDBname, "\")) & "areas.wwd" & vbCrLf & ex.Message)
-                Return -1
-            End Try
+        Try
+            fsA = New FileStream(Mid(strDBname, 1, InStrRev(strDBname, "\")) & "areas.wwd", FileMode.Open)
+            brA = New BinaryReader(fsA)
+            bwA = New BinaryWriter(fsA)
 
             fsA.Seek(562 * EchoID + 370, SeekOrigin.Begin)
+
+        Catch ex As Exception
+            MsgBox("Ошибка открытия файла: " & Mid(strDBname, 1, InStrRev(strDBname, "\")) & "areas.wwd" & vbCrLf & ex.Message)
+            Return -1
+        End Try
+
+        If msgNumber = 0 Then
+            'read
             ret = brA.ReadInt32
 
             If ret < 0 Then
@@ -304,7 +307,6 @@ Public Class Database
             Return ret
         Else
             'write
-            bwA = New BinaryWriter(fsA)
             Try
                 fsA.Seek(562 * EchoID + 370, SeekOrigin.Begin)
                 bwA.Write(msgNumber)
