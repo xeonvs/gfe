@@ -6,7 +6,7 @@ Imports System.Text
 Public Class Database
     Implements IDatabases
 
-#Region "Squish Structure"
+#Region "Sample Squish Structure"
     'Description: _
     'Squish has four files: _
     '*.SQL   - the lastread pointers are stored for the user. The lastus00.dat _
@@ -159,6 +159,7 @@ Public Class Database
     Private brI As BinaryReader 'Index reader
 
     Private ffsI As String      'filename for index
+    Private ffsL As String      'filename for lastread
     Private FrameOffsets() As sqIdxType 'Offset Cache
     Private enc As Encoding = Encoding.GetEncoding(866)
     Private dtUNIX_DATE As Date = DateTime.Parse("01.01.1970 00:00:00")
@@ -255,7 +256,45 @@ Public Class Database
 
     End Sub
     Public Function GetLastReadMsgNum(Optional ByVal msgNumber As Integer = 0) As Integer Implements GfeCore.IDatabases.GetLastReadMsgNum
-        Return 0
+        Dim fsL As Stream
+        Dim brL As BinaryReader, bwL As BinaryWriter
+        Dim msgn As Integer
+
+        Try
+            fsL = New FileStream(ffsL, FileMode.Open)
+            brL = New BinaryReader(fsL)
+        Catch e As System.IO.FileNotFoundException
+            MsgBox("Файл " & ffsL & " не найден.", MsgBoxStyle.Exclamation)
+            Exit Function
+        Catch
+            Exit Function
+        End Try
+
+        If msgNumber = 0 Then
+            If fsL.Length <> 0 Then
+                msgn = GetMessageNumberBYuMsgId(brL.ReadInt32)
+            End If
+
+        Else 'сохраняем состояние
+            If fsL.Length <> 0 Then
+                bwL = New BinaryWriter(fsL)
+                msgNumber = FrameOffsets(msgNumber).uMsgId
+                bwL.Write(msgNumber)
+                msgn = msgNumber
+            End If
+        End If
+
+        fsL.Close()
+        bwL = Nothing
+        brL = Nothing
+        fsL = Nothing
+
+        If msgn > 0 And msgn <= numMessages Then
+            Return msgn
+        Else
+            Return -1
+        End If
+
     End Function
     Public Sub GetMessageByNum(ByVal NumberMessage As Integer) Implements GfeCore.IDatabases.GetMessageByNum
         If NumberMessage > numMessages Then
@@ -369,6 +408,7 @@ Public Class Database
     Public Sub OpenDB() Implements GfeCore.IDatabases.OpenDB
 
         ffsI = Mid$(DBName, 1, InStr(DBName, ".sqd", CompareMethod.Text)) & "sqi"
+        ffsL = Mid$(DBName, 1, InStr(DBName, ".sqd", CompareMethod.Text)) & "sql"
         numMessages = Me.MessageCountByEcho(strDBname)
 
         Try
@@ -514,7 +554,7 @@ Public Class Database
     ''' <param name="uMsgId"></param>
     ''' <returns></returns>
     ''' <remarks></remarks>
-    Private Function GetReplayNumberByuMsgId(ByVal uMsgId As Integer)
+    Private Function GetMessageNumberBYuMsgId(ByVal uMsgId As Integer)
 
         If uMsgId > 0 Then
             For i As Integer = 0 To FrameOffsets.Length - 1
