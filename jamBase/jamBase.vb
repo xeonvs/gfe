@@ -397,6 +397,7 @@ Public Class Database
     Public Function GetMessageKlugeByNum(ByVal NumberMessage As Integer) As String Implements GfeCore.IDatabases.GetMessageKlugeByNum
         Return ""
     End Function
+
     Public Property MessageCount() As Integer Implements GfeCore.IDatabases.MessageCount
         Get
             Return numMessages
@@ -474,7 +475,8 @@ Public Class Database
         Catch e As System.IO.FileNotFoundException
             MsgBox("Файл заголовков: " & strDBname & " не найден.")
             Exit Sub
-        Catch
+        Catch ex As Exception
+            MsgBox("OpenDB::" & ex.Message)
             Exit Sub
         End Try
 
@@ -485,7 +487,8 @@ Public Class Database
         Catch e As System.IO.FileNotFoundException
             MsgBox("Файл текстов: " & ffsT & " не найден.")
             Exit Sub
-        Catch
+        Catch ex As Exception
+            MsgBox("OpenDB::" & ex.Message)
             Exit Sub
         End Try
 
@@ -493,9 +496,10 @@ Public Class Database
             fsI = New FileStream(ffsI, FileMode.Open)
             brI = New BinaryReader(fsI)
         Catch e As System.IO.FileNotFoundException
-            MsgBox("Файл индексов: " & ffsT & " не найден.")
+            MsgBox("Файл индексов: " & ffsI & " не найден.")
             Exit Sub
-        Catch
+        Catch ex As Exception
+            MsgBox("OpenDB::" & ex.Message)
             Exit Sub
         End Try
     End Sub
