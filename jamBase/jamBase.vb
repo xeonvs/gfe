@@ -493,7 +493,7 @@ Public Class Database
         End Try
 
         Try
-            fsI = New FileStream(ffsI, FileMode.Open)
+            fsI = New FileStream(ffsI, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite)
             brI = New BinaryReader(fsI)
         Catch e As System.IO.FileNotFoundException
             MsgBox("Файл индексов: " & ffsI & " не найден.")

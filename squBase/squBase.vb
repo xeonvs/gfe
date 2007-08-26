@@ -278,7 +278,7 @@ Public Class Database
         Else 'сохраняем состояние
             If fsL.Length <> 0 Then
                 bwL = New BinaryWriter(fsL)
-                msgNumber = FrameOffsets(msgNumber).uMsgId
+                msgNumber = FrameOffsets(msgNumber - 1).uMsgId
                 bwL.Write(msgNumber)
                 msgn = msgNumber
             End If
@@ -356,7 +356,7 @@ Public Class Database
             Dim br As BinaryReader
 
             Try
-                fs = New FileStream(EchoPath, FileMode.Open)
+                fs = New FileStream(EchoPath, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite)
                 br = New BinaryReader(fs)
 
                 If fs.Length <> 0 Then
@@ -382,7 +382,6 @@ Public Class Database
             End If
 
         End Get
-
     End Property
 
     Public Property MessageFlags() As Integer Implements GfeCore.IDatabases.MessageFlags
@@ -423,7 +422,7 @@ Public Class Database
         End Try
 
         Try
-            fsI = New FileStream(ffsI, FileMode.Open)
+            fsI = New FileStream(ffsI, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite)
             brI = New BinaryReader(fsI)
         Catch e As System.IO.FileNotFoundException
             MsgBox("Файл индексов: " & ffsI & " не найден.")
@@ -554,7 +553,7 @@ Public Class Database
     ''' <param name="uMsgId"></param>
     ''' <returns></returns>
     ''' <remarks></remarks>
-    Private Function GetMessageNumberBYuMsgId(ByVal uMsgId As Integer)
+    Private Function GetMessageNumberBYuMsgId(ByVal uMsgId As Integer) As Integer
 
         If uMsgId > 0 Then
             For i As Integer = 0 To FrameOffsets.Length - 1
