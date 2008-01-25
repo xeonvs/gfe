@@ -1065,11 +1065,17 @@ errHandler:
 
                     sqlConn.Close()
 
+                Catch ex As Npgsql.NpgsqlException
+                    MsgBox("Ошибка подключения БД:: " & ex.Message, MsgBoxStyle.Critical)
+
                 Catch ex As Exception
 
+                Finally
+                    cIni = Nothing
                 End Try
             Case Else
                 'не поддерживаемый тип тоссера
+                cIni = Nothing
         End Select
     End Sub
 

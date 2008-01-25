@@ -159,7 +159,7 @@ Public Class frmMain
                     Try
                         cdb = CType(Activator.CreateInstance(Bases.Item(clsEchos.GetEchoTypeByNum(ECNum))), IDatabases)
                     Catch ex As KeyNotFoundException
-                        MsgBox("Выбранный тип (" & clsEchos.GetEchoTypeByNum(ECNum).ToString & ") базы не поддерживается или ошибка загрузки модуля базы.", MsgBoxStyle.Critical)
+                        MsgBox("LoadEchoList:: Выбранный тип (" & clsEchos.GetEchoTypeByNum(ECNum).ToString & ") базы не поддерживается или ошибка загрузки модуля базы.", MsgBoxStyle.Critical)
                         Exit For
                     End Try
                     cdb.EchoName = clsEchos.GetEchoNameByNum(ECNum)
