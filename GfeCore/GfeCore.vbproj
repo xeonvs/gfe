@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="clsCRC32.vb" />
+    <Compile Include="clsINI.vb" />
     <Compile Include="IDatabasesTypes.vb" />
     <Compile Include="IDatabases.vb" />
     <Compile Include="IModule.vb" />
