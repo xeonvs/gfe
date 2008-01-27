@@ -52,7 +52,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="clsEchoNames.vb" />
-    <Compile Include="clsINI.vb" />
     <None Include="My Project\AssemblyInfo.template.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
