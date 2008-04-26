@@ -241,8 +241,7 @@ Public Class clsEchoNames
             For i = 1 To EchoRefsCount
 
                 If EchoName = EchoRefs(i).EName Then
-                    Return EchoRefs(i).EFile
-                    Exit For
+                    Return EchoRefs(i).EFile                    
                 End If
 
             Next i
@@ -360,8 +359,7 @@ Public Class clsEchoNames
             For i = 1 To EchoRefsCount
 
                 If EchoName = EchoRefs(i).EName Then
-                    Return i
-                    Exit Property
+                    Return i                    
                 End If
 
             Next i
@@ -413,8 +411,10 @@ Public Class clsEchoNames
     ''' Стартовый метод, парсит конфиг и устанавливает внутренние состояние.
     ''' </summary>    
     Public Sub ParseConfig()
+        Dim tid As String = String.Empty
         'добавим сюда в последствии эвристики.
-        Select Case CShort(GetString(HKEY_CURRENT_USER, "SOFTWARE\GFE\Options", "TosserId", "0"))
+        ReadRegistry(My.Computer.Registry.CurrentUser, "SOFTWARE\GFE\Options", "TosserId", tid, "unknown")
+        Select Case CShort(tid)
 
             Case 0
                 ReadAreasBBS()
@@ -748,7 +748,9 @@ errHandler:
                         End If
 
                     Else
-                        ec.AkA = GetString(HKEY_CURRENT_USER, "SOFTWARE\GFE\Options", "MainAddress", "unknown")
+                        ReadRegistry(My.Computer.Registry.CurrentUser, "SOFTWARE\GFE\Options", "MainAddress", ec.AkA.ToString, "unknown")
+
+                        'ec.AkA = GetString(HKEY_CURRENT_USER, "SOFTWARE\GFE\Options", "MainAddress", "unknown")
                     End If
 
                     'Аплинк
@@ -983,7 +985,8 @@ errHandler:
                         End If
 
                     Else
-                        ec.AkA = GetString(HKEY_CURRENT_USER, "SOFTWARE\GFE\Options", "MainAddress", "unknown")
+                        ReadRegistry(My.Computer.Registry.CurrentUser, "SOFTWARE\GFE\Options", "MainAddress", ec.AkA.ToString, "unknown")
+                        'ec.AkA = GetString(HKEY_CURRENT_USER, "SOFTWARE\GFE\Options", "MainAddress", "unknown")
                     End If
 
                     'аплинк
