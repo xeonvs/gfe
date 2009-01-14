@@ -1,6 +1,8 @@
 Option Strict Off
 Option Explicit On
 
+Imports System.Text
+
 ''' <summary>
 ''' Класс предоставляющий доступ к списку эх
 ''' </summary>
@@ -9,9 +11,9 @@ Public Class clsEchoNames
     Implements IDatabasesTypes
 
     'прекодировка dos to windows
-    Private Declare Auto Function OemToChar Lib "user32" ( _
-                    ByVal lpszSrc As String, ByVal lpszDst As String _
-    ) As Integer
+    'Private Declare Auto Function OemToChar Lib "user32" ( _
+    '                ByVal lpszSrc As String, ByVal lpszDst As String _
+    ') As Integer
 
     '~~~~~~~~~Fastecho types
     Private Const EH_AKAS As Short = &H7S
@@ -111,6 +113,7 @@ Public Class clsEchoNames
     Private TossersNames() As String    'Имя тоссеров, индекс это Id тоссера
     Private strCfgName As String        'Файл конфига
     Private lngCurTosser As Integer     'текуцщий рабочий тоссер
+    Private enc As Encoding = Encoding.GetEncoding(866) 'Кодировка
 
     ''' <summary>
     ''' Конструктор "по умолчанию"
@@ -603,9 +606,11 @@ errHandler:
                 If ect <> IDatabasesTypes.enmBaseType.Passthru And InStr(1, hdr.Path, "\") <> 0 And ((Asc(Mid(hdr.Path, 1, 1)) >= 48 Or Asc(Mid(hdr.Path, 1, 1)) <= 57) And (Asc(Mid(hdr.Path, 1, 1)) >= 65)) And hdr.resv1 = 0 Then
 
                     ec.EName = Trim(Replace(hdr.Name, Chr(0), " "))
-                    ec.Description = Trim(Replace(hdr.Desc, Chr(0), " "))
-                    tmp = Space(Len(ec.Description))
-                    OemToChar(ec.Description, tmp)
+                    'ec.Description = Trim(Replace(hdr.Desc, Chr(0), " "))
+                    'tmp = Space(Len(ec.Description))
+                    'OemToChar(ec.Description, tmp)
+                    tmp = enc.GetString(Encoding.Default.GetBytes(hdr.Desc))
+
                     ec.Description = tmp
                     ec.GroupNum = bin2dec(Mid(dec2bin(CInt(hdr.Info.Group)), 8, 8))
                     ac = hdr.Info.AkA 'номер ака`шки
