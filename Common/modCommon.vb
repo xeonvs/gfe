@@ -102,7 +102,7 @@ Module modCommon
         End With
 
         Try
-            dsSmiles.ReadXml(SmilesPath & "\smilez.xml")
+            dsSmiles.ReadXml(SmilesPath & GfeCore.PatchSeparator & "smilez.xml")
         Catch
             'нужно сообщение тут?
         End Try
@@ -110,7 +110,7 @@ Module modCommon
     End Sub
 
     ''' <summary>
-    ''' Заменяет смайлики на их картинки.
+    ''' Заменяет смайлики на их картинки в RTF
     ''' </summary>
     ''' <param name="rtf">Ссылка на объект типа Windows.Forms.RichTextBox</param>    
     Public Sub ReplaceSmiles(ByRef rtf As Windows.Forms.RichTextBox)
@@ -151,9 +151,9 @@ Module modCommon
     End Sub
 
     ''' <summary>
-    ''' Заменяет смайлики на их картинки в html коде.
+    ''' Заменяет смайлики на их картинки в HTML коде.
     ''' </summary>
-    ''' <param name="html">Cтрока с html кодом</param>    
+    ''' <param name="html">Cтрока с HTML кодом</param>    
     Public Sub ReplaceSmiles(ByRef html As String)
         Dim smile, path As String
         Dim Match As Match, MatchResults As MatchCollection

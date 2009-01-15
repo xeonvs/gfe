@@ -1,22 +1,54 @@
-
 ''' <summary>
 ''' Модуль для доступа к глобальным настройкам ГФЕ
 ''' </summary> 
-Module modSettings
+Public Module modSettings
 
     ''' <summary>
     ''' Полный пусть запуска ГФЕ
     ''' </summary>    
-    Public AppRun As String = Application.StartupPath
+    Public AppRun As String = My.Application.Info.DirectoryPath
+
+    ''' <summary>
+    ''' Разделитель в путях к файлам
+    ''' </summary>
+    ''' <remarks>Платформо-зависим</remarks>
+    Public PatchSeparator As String = System.IO.Path.DirectorySeparatorChar
+
+    ''' <summary>
+    ''' True если запуск кода произошел под mono
+    ''' </summary>
+    ''' <remarks></remarks>
+    Public IsMonoRun As Boolean = False
+
+    ''' <summary>
+    ''' True если запуск кода произошел на платформе Unix
+    ''' </summary>
+    ''' <remarks></remarks>
+    Public IsUnixRun As Boolean = False
+
     ''' <summary>
     ''' Полный пусть к каталогу с дополнительными модулями
     ''' </summary>
     Public ModulesPath As String = AppRun
+
     ''' <summary>
     ''' Полный путь к каталогу со смайликами
     ''' </summary>
-    Public SmilesPath As String = AppRun & "\smilez"
+    Public SmilesPath As String = AppRun & PatchSeparator & "smilez"
 
+    ''' <summary>
+    ''' Информационная строка приложения
+    ''' </summary>
+    ''' <remarks>Содержит версию и тип операционной системы.</remarks>
+    Public sAppInfoString As String
+
+    ''' <summary>
+    ''' Перекодировать описания эх
+    ''' </summary>
+    ''' <remarks></remarks>
+    Public bRecodeDesc As Boolean = True
+
+#Region "Functions"
     ''' <summary>
     ''' Возвращает опцию из реестра
     ''' </summary>
@@ -47,8 +79,8 @@ Module modSettings
     Public Sub PutGFEOption(ByVal OptionPath As String, _
                             ByVal OptionName As String, _
                             ByVal Value As String)
-        'Registry.SaveString(HKEY_CURRENT_USER, "SOFTWARE\GFE\" & OptionPath, OptionName, Value)
         My.Computer.Registry.SetValue("HKEY_CURRENT_USER\SOFTWARE\GFE\" & OptionPath, OptionName, Value)
     End Sub
+#End Region
 
 End Module

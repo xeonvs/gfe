@@ -201,9 +201,9 @@ Public Class clsEchoNames
 
                 Case Else
 
-                    If InStr(1, FileToAnalyze, "\hpt", CompareMethod.Text) <> 0 Then
+                    If InStr(1, FileToAnalyze, GfeCore.PatchSeparator & "hpt", CompareMethod.Text) <> 0 Then
                         Return 2
-                    ElseIf InStr(1, FileToAnalyze, "\bbt", CompareMethod.Text) <> 0 Then
+                    ElseIf InStr(1, FileToAnalyze, GfeCore.PatchSeparator & "bbt", CompareMethod.Text) <> 0 Then
                         Return 3
                     Else
                         Return 0
@@ -288,12 +288,16 @@ Public Class clsEchoNames
     ''' Возвращеает описание по номеру эхи
     ''' </summary>
     ''' <param name="Number">внутренний номер эхи</param>
-    ''' <remarks>смю GetEchoFileByNum</remarks>
+    ''' <remarks>см. GetEchoFileByNum</remarks>
     Public ReadOnly Property GetEchoDescriptionByNum(ByVal Number As Integer) As String
         Get
 
             If Number > 0 And Number <= EchoRefsCount Then
-                Return EchoRefs(Number).Description
+                If GfeCore.bRecodeDesc Then
+                    Return Encoding.GetEncoding(866).GetString(Encoding.Default.GetBytes(EchoRefs(Number).Description))
+                Else
+                    Return EchoRefs(Number).Description
+                End If
             Else
                 Return vbNullString
             End If
@@ -603,7 +607,7 @@ errHandler:
 
             'если это не пассивная эха, и структура верна
             If Len(ec.EFile) <> 0 Then
-                If ect <> IDatabasesTypes.enmBaseType.Passthru And InStr(1, hdr.Path, "\") <> 0 And ((Asc(Mid(hdr.Path, 1, 1)) >= 48 Or Asc(Mid(hdr.Path, 1, 1)) <= 57) And (Asc(Mid(hdr.Path, 1, 1)) >= 65)) And hdr.resv1 = 0 Then
+                If ect <> IDatabasesTypes.enmBaseType.Passthru And InStr(1, hdr.Path, GfeCore.PatchSeparator) <> 0 And ((Asc(Mid(hdr.Path, 1, 1)) >= 48 Or Asc(Mid(hdr.Path, 1, 1)) <= 57) And (Asc(Mid(hdr.Path, 1, 1)) >= 65)) And hdr.resv1 = 0 Then
 
                     ec.EName = Trim(Replace(hdr.Name, Chr(0), " "))
                     'ec.Description = Trim(Replace(hdr.Desc, Chr(0), " "))
@@ -676,7 +680,9 @@ errHandler:
 
             'если строка не комент, не пустая и если база не пассивная тогда обрабатываем дальше
             If Mid(strs(i), 1, 1) <> "#" And Len(Trim(strs(i))) <> 0 Then
-                If InStr(1, strs(i), "Passthrough ", CompareMethod.Text) = 0 And (InStr(1, strs(i), "EchoArea ", CompareMethod.Text) <> 0 Or InStr(1, strs(i), "LocalArea ", CompareMethod.Text) <> 0) Then
+                If InStr(1, strs(i), "Passthrough ", CompareMethod.Text) = 0 And _
+                   (InStr(1, strs(i), "EchoArea ", CompareMethod.Text) <> 0 Or _
+                    InStr(1, strs(i), "LocalArea ", CompareMethod.Text) <> 0) Then
 
                     cols = Split(strs(i), " ")
 
@@ -737,7 +743,7 @@ errHandler:
                     ns = InStr(1, strs(i), "-d """, CompareMethod.Text) + 4
 
                     If ns > 4 Then
-                        ec.Description = Trim(Mid(strs(i), ns, InStr(ns, strs(i), """", CompareMethod.Text) - ns))                        
+                        ec.Description = Trim(Mid(strs(i), ns, InStr(ns, strs(i), """", CompareMethod.Text) - ns))
                     Else
                         ec.Description = "No Description"
                     End If
@@ -925,7 +931,10 @@ errHandler:
 
             'если строка не комент, не пустая и если база не пассивная тогда обрабатываем дальше
             If Mid(strs(i), 1, 1) <> ";" And Len(Trim(strs(i))) <> 0 Then
-                If InStr(1, strs(i), "EchoArea", CompareMethod.Text) <> 0 Or InStr(1, strs(i), "LocalArea", CompareMethod.Text) <> 0 Or InStr(1, strs(i), "BadArea", CompareMethod.Text) <> 0 Or InStr(1, strs(i), "DupeArea", CompareMethod.Text) <> 0 Then
+                If InStr(1, strs(i), "EchoArea", CompareMethod.Text) <> 0 Or _
+                   InStr(1, strs(i), "LocalArea", CompareMethod.Text) <> 0 Or _
+                   InStr(1, strs(i), "BadArea", CompareMethod.Text) <> 0 Or _
+                   InStr(1, strs(i), "DupeArea", CompareMethod.Text) <> 0 Then
 
                     cols = Split(strs(i), " ")
 
@@ -1037,6 +1046,7 @@ errHandler:
             tType = CInt(cIni.Value("Common", "TosserType"))
         End If
 
+        'для DRIMTosser поддерживается только SQL модуль на текущй момент.
         Select Case tType
             Case 1, 2, 3, 7
             Case 9 'FIPS
@@ -1115,7 +1125,9 @@ errHandler:
             fn = InStr(strt, rootBuff, vbLf)
             fname = Replace(Mid(rootBuff, strt + 8, fn - (strt + 8)), vbCrLf, "")
 
-            If InStr(1, fname, ";") = 0 And InStr(1, fname, "$") = 0 And InStr(1, fname, ")") = 0 And InStr(1, fname, ",") = 0 And InStr(1, fname, "(") = 0 Then
+            If InStr(1, fname, ";") = 0 And InStr(1, fname, "$") = 0 And _
+               InStr(1, fname, ")") = 0 And InStr(1, fname, ",") = 0 And _
+               InStr(1, fname, "(") = 0 Then
 
                 ff = FreeFile()
                 FileOpen(ff, fname, OpenMode.Binary)

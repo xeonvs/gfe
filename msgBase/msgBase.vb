@@ -123,10 +123,10 @@ Public Class Database
         Dim brM As BinaryReader
 
         Try
-            fsM = New FileStream(strDBname & "\" & Messages(NumberMessage - 1), FileMode.Open)
+            fsM = New FileStream(strDBname & GfeCore.PatchSeparator & Messages(NumberMessage - 1), FileMode.Open)
             brM = New BinaryReader(fsM)
         Catch e As System.IO.FileNotFoundException
-            MsgBox("Файл " & strDBname & "\" & Messages(NumberMessage - 1) & " не найден.", MsgBoxStyle.Exclamation)
+            MsgBox("Файл " & strDBname & GfeCore.PatchSeparator & Messages(NumberMessage - 1) & " не найден.", MsgBoxStyle.Exclamation)
             Exit Sub
         Catch
             Exit Sub
@@ -173,10 +173,10 @@ Public Class Database
         Dim brM As BinaryReader
 
         Try
-            fsM = New FileStream(strDBname & "\" & Messages(NumberMessage - 1), FileMode.Open)
+            fsM = New FileStream(strDBname & GfeCore.PatchSeparator & Messages(NumberMessage - 1), FileMode.Open)
             brM = New BinaryReader(fsM)
         Catch e As System.IO.FileNotFoundException
-            MsgBox("Файл " & strDBname & "\" & Messages(NumberMessage - 1) & " не найден.", MsgBoxStyle.Exclamation)
+            MsgBox("Файл " & strDBname & GfeCore.PatchSeparator & Messages(NumberMessage - 1) & " не найден.", MsgBoxStyle.Exclamation)
             Exit Sub
         Catch
             Exit Sub
@@ -211,10 +211,10 @@ Public Class Database
         Dim brM As BinaryReader
 
         Try
-            fsM = New FileStream(strDBname & "\" & Messages(NumberMessage - 1), FileMode.Open)
+            fsM = New FileStream(strDBname & GfeCore.PatchSeparator & Messages(NumberMessage - 1), FileMode.Open)
             brM = New BinaryReader(fsM)
         Catch e As System.IO.FileNotFoundException
-            MsgBox("Файл " & strDBname & "\" & Messages(NumberMessage - 1) & " не найден.", MsgBoxStyle.Exclamation)
+            MsgBox("Файл " & strDBname & GfeCore.PatchSeparator & Messages(NumberMessage - 1) & " не найден.", MsgBoxStyle.Exclamation)
             Exit Sub
         Catch
             Exit Sub

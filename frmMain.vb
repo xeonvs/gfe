@@ -311,11 +311,13 @@ Public Class frmMain
 
     Private Sub frmMain_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
 
+        GfeCore.Utils.Initialize()
+
         Me.Visible = False
-        Me.Text = "GoldFidoExplorer " & My.Application.Info.Version.Major.ToString & "." & My.Application.Info.Version.Minor.ToString & " build " & CStr(My.Application.Info.Version.Revision)
+        Me.Text = GfeCore.sAppInfoString
         ToolStripStatusLabelEchos.Text = "Новых 0, всего 0 писем в 0 эхах"        
         
-        ReadSettings() 'читаем настройки
+        Me.ReadSettings() 'читаем настройки
 
         modCommon.LoadDatabaseModules()
         modCommon.CreateSmilesDataset()
@@ -420,8 +422,10 @@ Public Class frmMain
         frmStart.Show() 'заставочка        
     End Sub
 
-    Private Sub optionsToolStripMenuItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles optionsToolStripMenuItem.Click
-        MessageBox.Show("Не реализовано!", Me.Text, MessageBoxButtons.OK, MessageBoxIcon.Information)
+    Private Sub OptionsToolStripMenuItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles optionsToolStripMenuItem.Click
+        If frmOptions.ShowDialog = Windows.Forms.DialogResult.OK Then
+            Me.ReadSettings()
+        End If
     End Sub
 
     Private Sub DisplayMessage_rtf(ByVal MessageNumber As Integer)
@@ -449,6 +453,11 @@ Public Class frmMain
 
     End Sub
 
+    ''' <summary>
+    ''' Отображение в окне необходимого письма.
+    ''' </summary>
+    ''' <param name="MessageNumber">Номер сообщения</param>
+    ''' <remarks></remarks>
     Private Sub DisplayMessage(ByVal MessageNumber As Integer)
         HtmlMailViewer.Document.Body.InnerHtml = ""
 
