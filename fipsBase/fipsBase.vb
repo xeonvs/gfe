@@ -280,14 +280,14 @@ Public Class Database
         Dim bwA As BinaryWriter
 
         Try
-            fsA = New FileStream(Mid(strDBname, 1, InStrRev(strDBname, "\")) & "areas.wwd", FileMode.Open)
+            fsA = New FileStream(Mid(strDBname, 1, InStrRev(strDBname, GfeCore.PatchSeparator)) & "areas.wwd", FileMode.Open)
             brA = New BinaryReader(fsA)
             bwA = New BinaryWriter(fsA)
 
             fsA.Seek(562 * EchoID + 370, SeekOrigin.Begin)
 
         Catch ex As Exception
-            MsgBox("Ошибка открытия файла: " & Mid(strDBname, 1, InStrRev(strDBname, "\")) & "areas.wwd" & vbCrLf & ex.Message)
+            MsgBox("Ошибка открытия файла: " & Mid(strDBname, 1, InStrRev(strDBname, GfeCore.PatchSeparator)) & "areas.wwd" & vbCrLf & ex.Message)
             Return -1
         End Try
 
@@ -387,13 +387,13 @@ Public Class Database
             Dim fsA As FileStream
             Dim brA As BinaryReader
 
-            ech = Replace(Mid(EchoPath, InStrRev(EchoPath, "\") + 1, EchoPath.Length), ".hdr", "", , , CompareMethod.Text)
+            ech = Replace(Mid(EchoPath, InStrRev(EchoPath, GfeCore.PatchSeparator) + 1, EchoPath.Length), ".hdr", "", , , CompareMethod.Text)
 
             Try
-                fsA = New FileStream(Mid(EchoPath, 1, InStrRev(EchoPath, "\")) & "areas.wwd", FileMode.Open)
+                fsA = New FileStream(Mid(EchoPath, 1, InStrRev(EchoPath, GfeCore.PatchSeparator)) & "areas.wwd", FileMode.Open)
                 bra = New BinaryReader(fsA)
             Catch
-                MsgBox("Ошибка чнения файла: " & Mid(EchoPath, 1, InStrRev(EchoPath, "\")) & "areas.wwd")
+                MsgBox("Ошибка чнения файла: " & Mid(EchoPath, 1, InStrRev(EchoPath, GfeCore.PatchSeparator)) & "areas.wwd")
                 Exit Property
             End Try
 
@@ -557,13 +557,13 @@ Public Class Database
         Dim fsA As FileStream
         Dim brA As BinaryReader
 
-        ech = Replace(Mid(EchoPath, InStrRev(EchoPath, "\") + 1, EchoPath.Length), ".hdr", "", , , CompareMethod.Text)
+        ech = Replace(Mid(EchoPath, InStrRev(EchoPath, GfeCore.PatchSeparator) + 1, EchoPath.Length), ".hdr", "", , , CompareMethod.Text)
 
         Try
-            fsA = New FileStream(Mid(EchoPath, 1, InStrRev(EchoPath, "\")) & "areas.wwd", FileMode.Open)
+            fsA = New FileStream(Mid(EchoPath, 1, InStrRev(EchoPath, GfeCore.PatchSeparator)) & "areas.wwd", FileMode.Open)
             brA = New BinaryReader(fsA)
         Catch
-            MsgBox("Ошибка чнения файла: " & Mid(EchoPath, 1, InStrRev(EchoPath, "\")) & "areas.wwd")
+            MsgBox("Ошибка чнения файла: " & Mid(EchoPath, 1, InStrRev(EchoPath, GfeCore.PatchSeparator)) & "areas.wwd")
             Exit Function
         End Try
 
@@ -598,13 +598,13 @@ Public Class Database
         Dim fsA As FileStream
         Dim brA As BinaryReader
 
-        ech = Replace(Mid(EchoPath, InStrRev(EchoPath, "\") + 1, EchoPath.Length), ".hdr", "", , , CompareMethod.Text)
+        ech = Replace(Mid(EchoPath, InStrRev(EchoPath, GfeCore.PatchSeparator) + 1, EchoPath.Length), ".hdr", "", , , CompareMethod.Text)
 
         Try
-            fsA = New FileStream(Mid(EchoPath, 1, InStrRev(EchoPath, "\")) & "areas.wwd", FileMode.Open)
+            fsA = New FileStream(Mid(EchoPath, 1, InStrRev(EchoPath, GfeCore.PatchSeparator)) & "areas.wwd", FileMode.Open)
             brA = New BinaryReader(fsA)
         Catch
-            MsgBox("Ошибка чнения файла: " & Mid(EchoPath, 1, InStrRev(EchoPath, "\")) & "areas.wwd")
+            MsgBox("Ошибка чнения файла: " & Mid(EchoPath, 1, InStrRev(EchoPath, GfeCore.PatchSeparator)) & "areas.wwd")
             Return ""
         End Try
 
