@@ -10,6 +10,9 @@
     Private Sub cmdOk_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdOk.Click
         PutGFEOption("Options", "cfgMsgBase", (txtBasePath.Text))
         PutGFEOption("Options", "TosserId", tid)
+
+
+        Me.Close()
     End Sub
 
     Private Sub cmdOpen_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdOpen.Click
