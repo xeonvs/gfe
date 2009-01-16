@@ -482,11 +482,7 @@ Public Class clsEchoNames
 
         ReDim EchoRefs(1)
 
-        ff = FreeFile()
-        bbsFile = Space(FileLen(strCfgName))
-        FileOpen(ff, strCfgName, OpenMode.Binary)
-        FileGet(ff, bbsFile)
-        FileClose(ff)
+        bbsFile = My.Computer.FileSystem.ReadAllText(strCfgName)
 
         'main loop
         rows = Split(bbsFile, vbCrLf)
@@ -916,11 +912,7 @@ errHandler:
         Dim ns, j, i, k, ff As Integer
         Dim ec As EchoRefType
 
-        ff = FreeFile()
-        FileOpen(ff, strCfgName, OpenMode.Binary)
-        tmp = Space(LOF(ff))
-        FileGet(ff, tmp)
-        FileClose(ff)
+        tmp = My.Computer.FileSystem.ReadAllText(strCfgName)
 
         strs = Split(Replace(tmp, vbCr, ""), vbLf)
         tmp = vbNullString
@@ -1109,11 +1101,8 @@ errHandler:
         Dim strt, fn As Integer
         Dim fname As String
 
-        ff = FreeFile()
-        FileOpen(ff, baseConfig, OpenMode.Binary)
-        rootBuff = Space(LOF(ff))
-        FileGet(ff, rootBuff)
-        FileClose(ff)
+        'чтение всего файла сразу, код в стиле .NET
+        rootBuff = My.Computer.FileSystem.ReadAllText(baseConfig)
 
         Do
             strt = InStr(strt + 1, rootBuff, "include ", CompareMethod.Text)
@@ -1129,11 +1118,7 @@ errHandler:
                InStr(1, fname, ")") = 0 And InStr(1, fname, ",") = 0 And _
                InStr(1, fname, "(") = 0 Then
 
-                ff = FreeFile()
-                FileOpen(ff, fname, OpenMode.Binary)
-                tmp = Space(LOF(ff))
-                FileGet(ff, tmp)
-                FileClose(ff)
+                tmp = My.Computer.FileSystem.ReadAllText(fname)
 
                 rootBuff = rootBuff & tmp
 
