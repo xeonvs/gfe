@@ -459,7 +459,11 @@ Public Class frmMain
     ''' <param name="MessageNumber">Номер сообщения</param>
     ''' <remarks></remarks>
     Private Sub DisplayMessage(ByVal MessageNumber As Integer)
-        HtmlMailViewer.Document.Body.InnerHtml = ""
+        Try
+            HtmlMailViewer.Document.Body.InnerHtml = ""
+        Catch
+            'ignore
+        End Try
 
         curEcho.GetHeadesByNum(MessageNumber)
         curEcho.GetMessageByNum(MessageNumber)
@@ -474,26 +478,35 @@ Public Class frmMain
             MailHead.Text = "Письмо без названия [ " & MessageNumber & " из " & curEcho.MessageCount & " ] " & CStr(DateAdd("s", curEcho.DateWritten, #1/1/1970#))
         End If
 
-        If curEcho.MessageText.Length <> 0 Then
-            'Note: В свойствах URL WebBrowser прописано about:blank
-            Dim myHtml As HtmlDocument = HtmlMailViewer.Document
-            Dim htm As String
+        Try
+            If curEcho.MessageText.Length <> 0 Then
+                'Note: В свойствах URL WebBrowser прописано about:blank
+                Dim myHtml As HtmlDocument = HtmlMailViewer.Document
+                Dim htm As String
 
-            myHtml.Body.Style = "border-style: none; " & _
-                                "margin: 2px; " & _
-                                "background-color: " & Win32ColorToHtml(msgBackColor) & "; " & _
-                                "color: " & Win32ColorToHtml(msgMainTextColor)
+                myHtml.Body.Style = "border-style: none; " & _
+                                    "margin: 2px; " & _
+                                    "background-color: " & Win32ColorToHtml(msgBackColor) & "; " & _
+                                    "color: " & Win32ColorToHtml(msgMainTextColor)
 
-            htm = "<font size=""2"" color=""" & _
-                Win32ColorToHtml(msgMainTextColor) & """>" & _
-                curEcho.MessageText & "</font>"
+                htm = "<font size=""2"" color=""" & _
+                    Win32ColorToHtml(msgMainTextColor) & """>" & _
+                    curEcho.MessageText & "</font>"
 
-            htm = htm.Replace(vbCr, "<br>" & vbCrLf)
+                htm = htm.Replace(vbCr, "<br>" & vbCrLf)
 
-            'заполняем текстом
-            modCommon.ReplaceSmiles(htm)
-            myHtml.Body.InnerHtml = htm
-        End If
+                'заполняем текстом
+                modCommon.ReplaceSmiles(htm)
+                myHtml.Body.InnerHtml = htm
+            End If
+
+        Catch ex As Exception
+            If GfeCore.IsUnixRun Then
+                Console.WriteLine("WebBrowser control curently not supported")
+            Else
+                Console.WriteLine(ex.Message & vbCrLf & ex.Source)
+            End If
+        End Try
 
     End Sub
 

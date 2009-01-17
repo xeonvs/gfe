@@ -15,6 +15,7 @@ Public Class clsEchoNames
     '                ByVal lpszSrc As String, ByVal lpszDst As String _
     ') As Integer
 
+
     '~~~~~~~~~Fastecho types
     Private Const EH_AKAS As Short = &H7S
 
