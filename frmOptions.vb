@@ -8,9 +8,9 @@
     End Sub
 
     Private Sub cmdOk_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdOk.Click
+
         PutGFEOption("Options", "cfgMsgBase", (txtBasePath.Text))
         PutGFEOption("Options", "TosserId", tid)
-
 
         Me.Close()
     End Sub
@@ -32,6 +32,7 @@
 
     Private Sub frmOptions_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         Dim dy As Integer = 19
+        'динамическое создание группы тоссеров.
         For i As Integer = 1 To clsEchos.TosserCount
             opt = New RadioButton
             opt.Name = "OptTid" & i
@@ -50,6 +51,9 @@
         Catch
             '
         End Try
+
+        txtBasePath.Text = GetGFEOption("Options", "cfgMsgBase", vbNullString)
+
     End Sub
 
     Private Sub opt_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs)
