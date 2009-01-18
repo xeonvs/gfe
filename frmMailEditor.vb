@@ -83,7 +83,7 @@ Public Class frmMailEditor
 
         Me.ToolStripSmiles.Items.Clear()
         For i As Integer = 0 To dsSmiles.Tables(0).Rows.Count - 1
-            Dim tlbBtn As New ToolStripButton("", Image.FromFile(SmilesPath & dsSmiles.Tables(0).Rows(i).Item("Path").ToString), AddressOf Me.Smiles_Click)
+            Dim tlbBtn As New ToolStripButton("", Image.FromFile(SmilesPath & PatchSeparator & dsSmiles.Tables(0).Rows(i).Item("Path").ToString), AddressOf Me.Smiles_Click)
 
             tlbBtn.Name = "Smile" & dsSmiles.Tables(0).Rows(i).Item("Id").ToString
             tlbBtn.Tag = dsSmiles.Tables(0).Rows(i).Item("Smile").ToString
@@ -95,7 +95,19 @@ Public Class frmMailEditor
             Me.ToolStripSmiles.Items.AddRange(New Windows.Forms.ToolStripItem() {tlbBtn})
         Next
 
+        If GfeCore.IsMonoRun Then
+            Me.ToolStripSmiles.AutoSize = False
+            Me.ToolStripSmiles.LayoutStyle = ToolStripLayoutStyle.VerticalStackWithOverflow
+
+            If Me.ToolStripSmiles.Orientation = Orientation.Horizontal Then
+                Me.ToolStripSmiles.Size = New Size(358, 47)
+            Else
+                Me.ToolStripSmiles.Size = New Size(47, 358)
+            End If
+        End If
+
         Me.ToolStripSmiles.Update()
+
 
     End Sub
 
@@ -116,7 +128,7 @@ Public Class frmMailEditor
 
         Me.Text &= "::" & myEcho.Subject
         If myEcho.MessageText.Length <> 0 Then
-            rtfMessage.Text = myEcho.MessageText
+            rtfMessage.Text = myEcho.MessageText.Replace(vbCr, vbCrLf)
         End If
 
         modCommon.ReplaceSmiles(Me.rtfMessage)

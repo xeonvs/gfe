@@ -49,7 +49,6 @@ Partial Public Class frmMain
         Me.ToolStripSeparator18 = New System.Windows.Forms.ToolStripSeparator
         Me.ToolStripMenuItemDump = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripMenuItemKluges = New System.Windows.Forms.ToolStripMenuItem
-        Me.HtmlMailViewer = New System.Windows.Forms.WebBrowser
         Me.MailHead = New System.Windows.Forms.GroupBox
         Me.lblFromAddr = New System.Windows.Forms.Label
         Me.lblTo = New System.Windows.Forms.Label
@@ -211,7 +210,6 @@ Partial Public Class frmMain
         '
         'SplitContainer2.Panel2
         '
-        Me.SplitContainer2.Panel2.Controls.Add(Me.HtmlMailViewer)
         Me.SplitContainer2.Panel2.Controls.Add(Me.MailHead)
         Me.SplitContainer2.Size = New System.Drawing.Size(461, 347)
         Me.SplitContainer2.SplitterDistance = 126
@@ -349,19 +347,6 @@ Partial Public Class frmMain
         Me.ToolStripMenuItemKluges.Name = "ToolStripMenuItemKluges"
         Me.ToolStripMenuItemKluges.Size = New System.Drawing.Size(173, 22)
         Me.ToolStripMenuItemKluges.Text = " лад&жи"
-        '
-        'HtmlMailViewer
-        '
-        Me.HtmlMailViewer.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-                    Or System.Windows.Forms.AnchorStyles.Left) _
-                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.HtmlMailViewer.IsWebBrowserContextMenuEnabled = False
-        Me.HtmlMailViewer.Location = New System.Drawing.Point(0, 64)
-        Me.HtmlMailViewer.MinimumSize = New System.Drawing.Size(20, 20)
-        Me.HtmlMailViewer.Name = "HtmlMailViewer"
-        Me.HtmlMailViewer.Size = New System.Drawing.Size(465, 149)
-        Me.HtmlMailViewer.TabIndex = 8
-        Me.HtmlMailViewer.Url = New System.Uri("about:blank", System.UriKind.Absolute)
         '
         'MailHead
         '
@@ -681,7 +666,7 @@ Partial Public Class frmMain
         Me.ToolStripMain.Location = New System.Drawing.Point(3, 0)
         Me.ToolStripMain.Name = "ToolStripMain"
         Me.ToolStripMain.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional
-        Me.ToolStripMain.Size = New System.Drawing.Size(162, 25)
+        Me.ToolStripMain.Size = New System.Drawing.Size(193, 25)
         Me.ToolStripMain.TabIndex = 3
         Me.ToolStripMain.Text = "ToolStripMain"
         '
@@ -1072,6 +1057,5 @@ Partial Public Class frmMain
     Friend WithEvents ToolStripSeparator18 As System.Windows.Forms.ToolStripSeparator
     Friend WithEvents ToolStripMenuItemDump As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents ToolStripMenuItemKluges As System.Windows.Forms.ToolStripMenuItem
-    Friend WithEvents HtmlMailViewer As System.Windows.Forms.WebBrowser
 
 End Class

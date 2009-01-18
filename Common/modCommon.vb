@@ -116,8 +116,11 @@ Module modCommon
     Public Sub ReplaceSmiles(ByRef rtf As Windows.Forms.RichTextBox)
         Dim smile, path As String
         Dim st, fn As Integer
-        Dim MyBitmap As Bitmap
+        Dim MyBitmap As Bitmap, clip As DataObject
         'Dim MyFormat As DataFormats.Format = DataFormats.GetFormat(DataFormats.Bitmap)
+
+        'сохраняем буфер
+        'clip = My.Computer.Clipboard.GetDataObject()
 
         For i As Integer = 0 To dsSmiles.Tables("Smiles").Rows.Count - 1
             Dim row As DataRow = dsSmiles.Tables("Smiles").Rows(i)
@@ -126,9 +129,31 @@ Module modCommon
 
             st = InStr(rtf.Text, smile, CompareMethod.Text) 'найденный смайл
             If st <> 0 Then
-                MyBitmap = Bitmap.FromFile(SmilesPath & path)                
-                My.Computer.Clipboard.Clear()
-                My.Computer.Clipboard.SetImage(MyBitmap)
+#If DEBUG Then
+                Console.WriteLine("load smile: " & SmilesPath & PatchSeparator & path)
+#End If
+                Try
+                    MyBitmap = Bitmap.FromFile(SmilesPath & PatchSeparator & path)
+
+                Catch ex As FileNotFoundException
+                    MsgBox("Файл & " & SmilesPath & PatchSeparator & path & "не найден", MsgBoxStyle.Exclamation, GfeCore.sAppInfoString)
+                    MyBitmap = Nothing
+
+                Catch ex As Exception
+                    Console.WriteLine(ex.Message & vbCrLf & ex.Source)
+                    MyBitmap = Nothing
+
+                End Try
+
+                Try                    
+                    If Not MyBitmap Is Nothing Then
+                        My.Computer.Clipboard.Clear()
+                        My.Computer.Clipboard.SetImage(MyBitmap)
+                    End If
+                Catch ex As Exception
+                    Console.WriteLine(ex.Message & vbCrLf & ex.Source)
+                End Try
+
             End If
 
             While st <> 0
@@ -137,16 +162,22 @@ Module modCommon
                 rtf.SelectionLength = smile.Length
 
                 If My.Computer.Clipboard.ContainsImage Then
-                    'If rtf.CanPaste(MyFormat) Then
+                    'If rtf.CanPaste(DataFormats.GetFormat(DataFormats.Bitmap)) Then
                     rtf.Paste()
                     'Else
                     'MessageBox.Show("The data format that you attempted to paste is not supported by this control.")
                     'End If
+#If DEBUG Then
+                Else
+                    Console.WriteLine("No img in clipboard")
+#End If
                 End If
 
                 st = InStr(fn, rtf.Text, smile, CompareMethod.Text)
             End While
         Next
+
+        'My.Computer.Clipboard.SetDataObject(clip)
 
     End Sub
 
@@ -162,7 +193,7 @@ Module modCommon
         For i As Integer = 0 To dsSmiles.Tables("Smiles").Rows.Count - 1
             Dim row As DataRow = dsSmiles.Tables("Smiles").Rows(i)
             smile = CType(row("Smile"), String) 'начинаются с пробела
-            path = "<img src=""file://" & SmilesPath & CType(row("Path"), String) & """>"
+            path = "<img src=""file://" & SmilesPath & PatchSeparator & CType(row("Path"), String) & """>"
 
             MatchResults = Regex.Matches(html, "[^le|\d+?|pp](" & Regex.Escape(smile) & "+)", RegexOptions.Multiline Or RegexOptions.Compiled)
             For j As Integer = 0 To MatchResults.Count - 1

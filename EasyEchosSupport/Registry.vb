@@ -19,10 +19,13 @@ Module Registry
 
             'Set the value.
             Key.SetValue(ValueName, Value)
-
+#If DEBUG Then
             Console.WriteLine("Value:{0} for {1} is successfully written.", Value, ValueName)
+#End If
         Catch e As Exception
+#If DEBUG Then
             Console.WriteLine("Error occurs in WriteRegistry" & e.Message)
+#End If
         End Try
     End Sub
 
