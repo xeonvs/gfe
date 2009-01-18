@@ -14,10 +14,11 @@ Public Class frmMain
     Dim msgBackColor, msgAlienCitatColor, msgMyCitatColor As Integer
     Dim msgTaglineColor, msgTirlineColor, msgMyMessagesColor As Integer
     Dim msgOriginColor As Integer
-    
 
+    Dim MailViewer As Object
+ 
     Private Sub ReadSettings()
-        
+
         msgModeratorColor = CInt(GetGFEOption("Options", "msgModeratorColor", CStr(&HFF00)))
         msgRulesColor = CInt(GetGFEOption("Options", "msgRulesColor", CStr(&H40FF00)))
         msgAlienCitatColor = CInt(GetGFEOption("Options", "AlienCitatColor", CStr(&HFFFF)))
@@ -263,6 +264,59 @@ Public Class frmMain
 
     End Sub
 
+    ''' <summary>
+    ''' Динамически создает объект для отображения текста писем.
+    ''' </summary>
+    ''' <remarks>Если WebBrowser не поддерживается платформой, будет использован RichTextEdit</remarks>
+    Public Sub CreateMailViewerControl()
+        Try
+#If DEBUG Then
+            Console.Write("Try Web...")
+#End If
+            Me.MailViewer = New WebBrowser
+            MailViewer.Document.Body.InnerHtml = ""
+            Me.MailViewer.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+                        Or System.Windows.Forms.AnchorStyles.Left) _
+                        Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+            Me.MailViewer.IsWebBrowserContextMenuEnabled = False
+            Me.MailViewer.Location = New System.Drawing.Point(0, 64)
+            Me.MailViewer.MinimumSize = New System.Drawing.Size(20, 20)
+            Me.MailViewer.Name = "htmlMailViewer"
+            Me.MailViewer.Size = New System.Drawing.Size(465, 149)
+            Me.MailViewer.TabIndex = 8
+            Me.MailViewer.Url = New System.Uri("about:blank", System.UriKind.Absolute)
+            Me.MailViewer.Dock = DockStyle.Fill
+            Me.SplitContainer2.Panel2.Controls.Add(Me.MailViewer)
+#If DEBUG Then
+            Console.WriteLine("Ok")
+#End If
+        Catch
+#If DEBUG Then
+            Console.WriteLine("Fail")
+            Console.Write("Try RTF...")
+#End If
+            Me.MailViewer = New RichTextBox
+            Me.MailViewer.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+                        Or System.Windows.Forms.AnchorStyles.Left) _
+                        Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+            Me.MailViewer.Location = New System.Drawing.Point(0, 64)
+            Me.MailViewer.MinimumSize = New System.Drawing.Size(20, 20)
+            Me.MailViewer.Name = "rtfMailViewer"
+            Me.MailViewer.Size = New System.Drawing.Size(465, 149)
+            Me.MailViewer.TabIndex = 8
+            Me.MailViewer.ReadOnly = True
+            Me.MailViewer.BackColor = ColorTranslator.FromWin32(msgBackColor)
+            Me.MailViewer.ForeColor = ColorTranslator.FromWin32(msgMainTextColor)
+            Me.MailViewer.Dock = DockStyle.Fill
+            Me.SplitContainer2.Panel2.Controls.Add(Me.MailViewer)
+            Me.MailViewer.Text = ""
+#If DEBUG Then
+            Console.WriteLine("Ok")
+#End If
+        End Try
+    End Sub
+
+
     Private Sub exitToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles exitToolStripMenuItem.Click
         Me.Close()
     End Sub
@@ -275,7 +329,7 @@ Public Class frmMain
 
         If Me.WindowState = vbNormal Then
             PutGFEOption("Screen\Main", "X", Str(Me.Left * 15))
-            PutGFEOption("Screen\Main", "Y", Str(Me.Top * 15))            
+            PutGFEOption("Screen\Main", "Y", Str(Me.Top * 15))
         End If
 
         PutGFEOption("Screen\Main", "Width", Str(Me.Width * 15))
@@ -302,7 +356,7 @@ Public Class frmMain
         For i As Integer = 0 To EchoList.Columns.Count - 1
             PutGFEOption("Screen\Main", "EchoListColumns" + i.ToString, EchoList.Columns.Item(i).Width)
         Next
-        
+
         Me.Hide()
         If EchoList.SelectedItems.Count <> 0 Then
             PutGFEOption("LastRead", "Echo", EchoList.SelectedItems.Item(0).Text)
@@ -310,15 +364,17 @@ Public Class frmMain
     End Sub
 
     Private Sub frmMain_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+        Me.Visible = False
 
         GfeCore.Utils.Initialize()
-
-        Me.Visible = False
-        Me.Text = GfeCore.sAppInfoString
-        ToolStripStatusLabelEchos.Text = "Новых 0, всего 0 писем в 0 эхах"        
-        
         Me.ReadSettings() 'читаем настройки
+        Me.CreateMailViewerControl()
+        Me.Update()
 
+        Me.Text = GfeCore.sAppInfoString
+        ToolStripStatusLabelEchos.Text = "Новых 0, всего 0 писем в 0 эхах"
+
+        
         modCommon.LoadDatabaseModules()
         modCommon.CreateSmilesDataset()
 
@@ -329,15 +385,15 @@ Public Class frmMain
 
         EchoList.BeginUpdate()
         LoadEchoList() 'читаем список эх
-        EchoList.EndUpdate()    
+        EchoList.EndUpdate()
 
     End Sub
-    
-    Private Sub MailList_ItemSelectionChanged(ByVal sender As Object, ByVal e As System.Windows.Forms.ListViewItemSelectionChangedEventArgs) Handles MailList.ItemSelectionChanged        
+
+    Private Sub MailList_ItemSelectionChanged(ByVal sender As Object, ByVal e As System.Windows.Forms.ListViewItemSelectionChangedEventArgs) Handles MailList.ItemSelectionChanged
         DisplayMessage(e.ItemIndex + 1)
         ItemSelection = e
     End Sub
-    
+
     Private Sub MailList_MouseDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles MailList.MouseDoubleClick
         Dim frmMlEd As New frmMailEditor
 
@@ -388,9 +444,11 @@ Public Class frmMain
         ' А нужен ли тут код проверки на одновременное написание нескольких писем в одну эху?
         ' технически проблем с написанием не должно быть, если в методе сохранения письма обновлять информацию о эхе.
         For Each frm In Application.OpenForms
-            If frm.Tag.ToString = EchoList.SelectedItems.Item(0).Text Then
-                flg = True
-                Exit For
+            If Not frm.Tag Is Nothing Then
+                If frm.Tag.ToString = EchoList.SelectedItems.Item(0).Text Then
+                    flg = True
+                    Exit For
+                End If
             End If
         Next
 
@@ -422,35 +480,14 @@ Public Class frmMain
         frmStart.Show() 'заставочка        
     End Sub
 
+    Private Sub helpToolStripButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles helpToolStripButton.Click
+        frmStart.Show() 'заставочка    
+    End Sub
+
     Private Sub OptionsToolStripMenuItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles optionsToolStripMenuItem.Click
         If frmOptions.ShowDialog = Windows.Forms.DialogResult.OK Then
             Me.ReadSettings()
         End If
-    End Sub
-
-    Private Sub DisplayMessage_rtf(ByVal MessageNumber As Integer)
-        'MailViewer.Clear()
-
-        curEcho.GetHeadesByNum(MessageNumber)
-        curEcho.GetMessageByNum(MessageNumber)
-
-        lblFrom.Text = "От кого: " & curEcho.From
-        lblFromAddr.Text = curEcho.FromAddr '& " (" & addr2city(msg.FromAddr) & ")"
-        lblTo.Text = "Кому: " & curEcho.To
-
-        If curEcho.Subject.Length > 0 Then
-            MailHead.Text = curEcho.Subject & " [ " & MessageNumber & " из " & curEcho.MessageCount & " ] " & CStr(DateAdd("s", curEcho.DateWritten, #1/1/1970#))
-        Else
-            MailHead.Text = "Письмо без названия [ " & MessageNumber & " из " & curEcho.MessageCount & " ] " & CStr(DateAdd("s", curEcho.DateWritten, #1/1/1970#))
-        End If
-
-        If curEcho.MessageText.Length <> 0 Then
-            'MailViewer.ReadOnly = False
-            'MailViewer.Text = curEcho.MessageText
-            'modCommon.ReplaceSmiles(Me.MailViewer)
-            'MailViewer.ReadOnly = True
-        End If
-
     End Sub
 
     ''' <summary>
@@ -459,11 +496,73 @@ Public Class frmMain
     ''' <param name="MessageNumber">Номер сообщения</param>
     ''' <remarks></remarks>
     Private Sub DisplayMessage(ByVal MessageNumber As Integer)
-        Try
-            HtmlMailViewer.Document.Body.InnerHtml = ""
-        Catch
-            'ignore
-        End Try
+        
+        curEcho.GetHeadesByNum(MessageNumber)
+        curEcho.GetMessageByNum(MessageNumber)
+
+        lblFrom.Text = "От кого: " & curEcho.From
+        lblFromAddr.Text = curEcho.FromAddr '& " (" & addr2city(msg.FromAddr) & ")"
+        lblTo.Text = "Кому: " & curEcho.To
+
+        If curEcho.Subject.Length > 0 Then
+            MailHead.Text = curEcho.Subject & " [ " & MessageNumber & " из " & curEcho.MessageCount & " ] " & CStr(DateAdd("s", curEcho.DateWritten, #1/1/1970#))
+        Else
+            MailHead.Text = "Письмо без названия [ " & MessageNumber & " из " & curEcho.MessageCount & " ] " & CStr(DateAdd("s", curEcho.DateWritten, #1/1/1970#))
+        End If
+
+        Select MailViewer.Name
+            Case "rtfMailViewer"
+                If curEcho.MessageText.Length <> 0 Then
+                    MailViewer.ReadOnly = False
+                    MailViewer.Text = curEcho.MessageText.Replace(vbCr, vbCrLf)
+                    modCommon.ReplaceSmiles(Me.MailViewer)
+                    MailViewer.ReadOnly = True
+                End If
+
+            Case "htmlMailViewer"
+                Try
+                    MailViewer.Document.Body.InnerHtml = ""
+
+                    If curEcho.MessageText.Length <> 0 Then
+                        'Note: В свойствах URL WebBrowser прописано about:blank
+                        Dim myHtml As HtmlDocument = MailViewer.Document
+                        Dim htm As String
+
+                        myHtml.Body.Style = "border-style: none; " & _
+                                            "margin: 2px; " & _
+                                            "background-color: " & Win32ColorToHtml(msgBackColor) & "; " & _
+                                            "color: " & Win32ColorToHtml(msgMainTextColor)
+
+                        htm = "<font size=""2"" color=""" & _
+                            Win32ColorToHtml(msgMainTextColor) & """>" & _
+                            curEcho.MessageText & "</font>"
+
+                        htm = htm.Replace(vbCr, "<br>" & vbCrLf)
+
+                        'заполняем текстом
+                        modCommon.ReplaceSmiles(htm)
+                        myHtml.Body.InnerHtml = htm
+                    End If
+
+                Catch ex As Exception
+                    If GfeCore.IsUnixRun Then
+                        Console.WriteLine("WebBrowser control curently not supported")
+                    Else
+                        Console.WriteLine(ex.Message & vbCrLf & ex.Source)
+                    End If
+                End Try
+
+            Case Else
+                MsgBox("error to create mailviewer")
+        End Select
+    End Sub
+
+    ''' <summary>
+    ''' Отображение в окне необходимого письма.
+    ''' </summary>
+    ''' <param name="MessageNumber">Номер сообщения</param>
+    ''' <remarks>исспользует html</remarks>
+    Private Sub DisplayMessage_html(ByVal MessageNumber As Integer)
 
         curEcho.GetHeadesByNum(MessageNumber)
         curEcho.GetMessageByNum(MessageNumber)
@@ -479,9 +578,11 @@ Public Class frmMain
         End If
 
         Try
+            MailViewer.Document.Body.InnerHtml = ""
+
             If curEcho.MessageText.Length <> 0 Then
                 'Note: В свойствах URL WebBrowser прописано about:blank
-                Dim myHtml As HtmlDocument = HtmlMailViewer.Document
+                Dim myHtml As HtmlDocument = MailViewer.Document
                 Dim htm As String
 
                 myHtml.Body.Style = "border-style: none; " & _
