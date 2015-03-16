@@ -1,0 +1,12 @@
+# Introduction #
+
+ScreenShots running Gfe.NET  in FreeBSD
+
+
+# Details #
+Main Window
+![http://netroad.ru/~xeon/gfe2k5_unix.png](http://netroad.ru/~xeon/gfe2k5_unix.png)
+
+
+View Message
+![http://netroad.ru/~xeon/gfe2k5_unix_v.png](http://netroad.ru/~xeon/gfe2k5_unix_v.png)
